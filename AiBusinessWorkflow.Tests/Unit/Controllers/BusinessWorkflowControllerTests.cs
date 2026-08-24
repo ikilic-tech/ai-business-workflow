@@ -1,0 +1,112 @@
+using AiBusinessWorkflow.Api.Controllers;
+using AiBusinessWorkflow.Api.Models;
+using AiBusinessWorkflow.Api.Services.AI;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+
+namespace AiBusinessWorkflow.Tests.Unit.Controllers;
+
+public class BusinessWorkflowControllerTests
+{
+    private readonly Mock<IAiService> _mockAiService;
+    private readonly BusinessWorkflowController _controller;
+
+    public BusinessWorkflowControllerTests()
+    {
+        _mockAiService = new Mock<IAiService>();
+        var mockLogger = new Mock<ILogger<BusinessWorkflowController>>();
+        _controller = new BusinessWorkflowController(_mockAiService.Object, mockLogger.Object);
+    }
+
+    private static BusinessProcess CreateValidProcess() => new()
+    {
+        Id = "test-001",
+        Name = "Test Process",
+        Description = "A valid test process",
+        InputData = "Some input data",
+        Goal = "Some goal"
+    };
+
+    private static BusinessProcessAnalysis CreateSampleAnalysis() => new()
+    {
+        ProcessId = "test-001",
+        ProcessName = "Test Process",
+        Efficiency = new EfficiencyAnalysis { Score = 75, Rating = "Medium", Explanation = "OK" },
+        Bottlenecks = new List<Bottleneck>(),
+        Recommendations = new List<Recommendation>(),
+        AutomationOpportunities = new List<AutomationOpportunity>(),
+        OverallRiskLevel = "Low",
+        Summary = "Good process"
+    };
+
+    [Fact]
+    public async Task Analyze_WithValidProcess_ShouldReturnOkWithAnalysis()
+    {
+        var process = CreateValidProcess();
+        var analysis = CreateSampleAnalysis();
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+            .ReturnsAsync(analysis);
+
+        var result = await _controller.Analyze(process);
+
+        var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+        var returnedAnalysis = okResult.Value.Should().BeOfType<BusinessProcessAnalysis>().Subject;
+        returnedAnalysis.ProcessId.Should().Be("test-001");
+        returnedAnalysis.Efficiency.Score.Should().Be(75);
+    }
+
+    [Fact]
+    public async Task Analyze_WhenServiceThrows_ShouldReturn500()
+    {
+        var process = CreateValidProcess();
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+            .ThrowsAsync(new InvalidOperationException("AI service failed"));
+
+        var result = await _controller.Analyze(process);
+
+        var statusResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        statusResult.StatusCode.Should().Be(500);
+    }
+
+    [Fact]
+    public async Task Analyze_ShouldReturnCorrectType()
+    {
+        var process = CreateValidProcess();
+        var analysis = CreateSampleAnalysis();
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+            .ReturnsAsync(analysis);
+
+        var result = await _controller.Analyze(process);
+
+        result.Should().BeOfType<ActionResult<BusinessProcessAnalysis>>();
+    }
+
+    [Fact]
+    public async Task Analyze_ShouldCallServiceWithProvidedProcess()
+    {
+        var process = CreateValidProcess();
+        var analysis = CreateSampleAnalysis();
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+            .ReturnsAsync(analysis);
+
+        await _controller.Analyze(process);
+
+        _mockAiService.Verify(s => s.AnalyzeBusinessProcessAsync(
+            It.Is<BusinessProcess>(p => p.Id == "test-001")), Times.Once);
+    }
+
+    [Fact]
+    public async Task Analyze_WhenServiceThrowsGenericException_ShouldReturn500()
+    {
+        var process = CreateValidProcess();
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+            .ThrowsAsync(new Exception("Unexpected error"));
+
+        var result = await _controller.Analyze(process);
+
+        var statusResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
+        statusResult.StatusCode.Should().Be(500);
+    }
+}

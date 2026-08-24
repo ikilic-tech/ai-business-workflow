@@ -70,3 +70,5 @@ app.MapGet("/api/samples/{index:int}", (int index) =>
 });
 
 app.Run();
+
+public partial class Program { }
