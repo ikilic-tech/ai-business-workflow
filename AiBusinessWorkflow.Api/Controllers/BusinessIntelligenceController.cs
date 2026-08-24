@@ -1,5 +1,6 @@
 using AiBusinessWorkflow.Api.Models;
 using AiBusinessWorkflow.Api.Services.AI;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AiBusinessWorkflow.Api.Controllers;
@@ -79,7 +80,20 @@ public class BusinessIntelligenceController : ControllerBase
         if (tasks.Count == 0)
             return BadRequest("At least one analysis input is required.");
 
-        await Task.WhenAll(tasks);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        try
+        {
+            await Task.WhenAll(tasks).WaitAsync(cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(StatusCodes.Status504GatewayTimeout, new ProblemDetails
+            {
+                Status = StatusCodes.Status504GatewayTimeout,
+                Title = "Gateway Timeout",
+                Detail = "One or more analysis tasks timed out."
+            });
+        }
 
         var summary = new DashboardSummary
         {
