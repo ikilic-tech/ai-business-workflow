@@ -70,6 +70,26 @@ app.MapGet("/api/samples/{index:int}", (int index) =>
     return sample is not null ? Results.Ok(sample) : Results.NotFound();
 });
 
+app.MapGet("/api/samples/customers", () => BusinessIntelligenceSampleData.GetAllCustomers());
+
+app.MapGet("/api/samples/customers/{index:int}", (int index) =>
+{
+    var sample = BusinessIntelligenceSampleData.GetCustomerByIndex(index);
+    return sample is not null ? Results.Ok(sample) : Results.NotFound();
+});
+
+app.MapGet("/api/samples/opportunities", () => BusinessIntelligenceSampleData.GetAllOpportunities());
+
+app.MapGet("/api/samples/opportunities/{index:int}", (int index) =>
+{
+    var sample = BusinessIntelligenceSampleData.GetOpportunityByIndex(index);
+    return sample is not null ? Results.Ok(sample) : Results.NotFound();
+});
+
+app.MapGet("/api/samples/activities", () => BusinessIntelligenceSampleData.GetActivitySummary());
+
+app.MapGet("/api/samples/actions-context", () => BusinessIntelligenceSampleData.GetActionsContext());
+
 app.Run();
 
 public partial class Program { }
