@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AiBusinessWorkflow.Api.Middleware;
@@ -39,9 +41,16 @@ public class ApiKeyAuthMiddleware
 
         var configuredKeys = _configuration.GetSection("Authentication:ApiKeys").Get<string[]>();
 
-        // If no keys are configured, skip authentication (development convenience)
+        // If no keys are configured, only allow in Development
         if (configuredKeys is null || configuredKeys.Length == 0)
         {
+            if (!IsDevEnvironment(context))
+            {
+                _logger.LogError("No API keys configured in non-Development environment");
+                await WriteUnauthorizedResponse(context, "API authentication is not configured.");
+                return;
+            }
+
             await _next(context);
             return;
         }
@@ -54,7 +63,15 @@ public class ApiKeyAuthMiddleware
             return;
         }
 
-        if (!configuredKeys.Contains(providedKey.ToString()))
+        var providedBytes = Encoding.UTF8.GetBytes(providedKey.ToString());
+        var isValid = configuredKeys.Any(key =>
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+            return keyBytes.Length == providedBytes.Length &&
+                   CryptographicOperations.FixedTimeEquals(keyBytes, providedBytes);
+        });
+
+        if (!isValid)
         {
             _logger.LogWarning("Request to {Path} rejected: invalid API key", path);
             await WriteForbiddenResponse(context, "The provided API key is not valid.");
@@ -62,6 +79,12 @@ public class ApiKeyAuthMiddleware
         }
 
         await _next(context);
+    }
+
+    private static bool IsDevEnvironment(HttpContext context)
+    {
+        var env = context.RequestServices.GetRequiredService<IHostEnvironment>();
+        return env.IsDevelopment();
     }
 
     private static bool IsPublicPath(string path)
