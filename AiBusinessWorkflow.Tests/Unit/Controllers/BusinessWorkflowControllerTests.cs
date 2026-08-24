@@ -3,7 +3,6 @@ using AiBusinessWorkflow.Api.Models;
 using AiBusinessWorkflow.Api.Services.AI;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace AiBusinessWorkflow.Tests.Unit.Controllers;
@@ -16,8 +15,7 @@ public class BusinessWorkflowControllerTests
     public BusinessWorkflowControllerTests()
     {
         _mockAiService = new Mock<IAiService>();
-        var mockLogger = new Mock<ILogger<BusinessWorkflowController>>();
-        _controller = new BusinessWorkflowController(_mockAiService.Object, mockLogger.Object);
+        _controller = new BusinessWorkflowController(_mockAiService.Object);
     }
 
     private static BusinessProcess CreateValidProcess() => new()
@@ -58,16 +56,16 @@ public class BusinessWorkflowControllerTests
     }
 
     [Fact]
-    public async Task Analyze_WhenServiceThrows_ShouldReturn500()
+    public async Task Analyze_WhenServiceThrows_ShouldPropagateException()
     {
         var process = CreateValidProcess();
         _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var result = await _controller.Analyze(process);
+        var act = () => _controller.Analyze(process);
 
-        var statusResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
-        statusResult.StatusCode.Should().Be(500);
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("AI service failed");
     }
 
     [Fact]
@@ -95,18 +93,5 @@ public class BusinessWorkflowControllerTests
 
         _mockAiService.Verify(s => s.AnalyzeBusinessProcessAsync(
             It.Is<BusinessProcess>(p => p.Id == "test-001")), Times.Once);
-    }
-
-    [Fact]
-    public async Task Analyze_WhenServiceThrowsGenericException_ShouldReturn500()
-    {
-        var process = CreateValidProcess();
-        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
-            .ThrowsAsync(new Exception("Unexpected error"));
-
-        var result = await _controller.Analyze(process);
-
-        var statusResult = result.Result.Should().BeOfType<ObjectResult>().Subject;
-        statusResult.StatusCode.Should().Be(500);
     }
 }

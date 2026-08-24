@@ -1,6 +1,7 @@
 using System.ClientModel;
 using OpenAI.Responses;
 using AiBusinessWorkflow.Api.Data;
+using AiBusinessWorkflow.Api.Middleware;
 using AiBusinessWorkflow.Api.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Configuration.AddJsonFile(
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 
 var apiKey = builder.Configuration["AI:ApiKey"];
 if (!string.IsNullOrWhiteSpace(apiKey))
@@ -35,6 +37,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.MapControllers();
@@ -47,18 +51,8 @@ app.MapGet("/api/health", () => new
 
 app.MapGet("/api/ai/test", async (IAiService aiService) =>
 {
-    try
-    {
-        var result = await aiService.TestAiAsync();
-        return Results.Ok(new { status = "success", response = result });
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(
-            detail: ex.Message,
-            title: "AI Test Failed",
-            statusCode: 500);
-    }
+    var result = await aiService.TestAiAsync();
+    return Results.Ok(new { status = "success", response = result });
 });
 
 app.MapGet("/api/samples", () => SampleDataGenerator.GetAll());
