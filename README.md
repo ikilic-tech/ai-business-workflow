@@ -39,7 +39,8 @@ The idea is simple: if AI output doesn't help someone make a decision or take an
 - Docker support with multi-stage build
 - CI/CD pipeline with GitHub Actions
 - Swagger UI for interactive API docs
-- 160+ unit and integration tests
+- OWASP Top 10 security hardening (prompt injection protection, timing-safe auth, request size limits, security headers)
+- 185+ unit and integration tests
 
 ## Architecture
 
@@ -61,18 +62,18 @@ Pretty standard layered setup, but the important part is that the AI provider is
 ┌──────────────────────────────────────────────────────────────┐
 │                        API Layer                             │
 │                                                              │
-│  BusinessWorkflowController        Minimal API Endpoints     │
-│  POST /api/business-workflow/      GET /api/health           │
-│       analyze                      GET /api/ai/test          │
-│                                    GET /api/samples          │
-│  BusinessIntelligenceController    GET /api/samples/{index}  │
-│  POST /api/intelligence/           GET /api/samples/customers│
-│       customer-risk                GET /api/samples/          │
-│       activity-summary                  opportunities        │
-│       opportunity-analysis         GET /api/samples/          │
-│       recommended-actions               activities           │
-│       dashboard                    GET /api/samples/          │
-│                                         actions-context      │
+│  Controllers:                      Endpoint Extensions:      │
+│  BusinessWorkflowController        SampleEndpoints           │
+│  POST /api/business-workflow/        GET /api/samples/*      │
+│       analyze                      InfrastructureEndpoints   │
+│                                      GET /api/health         │
+│  BusinessIntelligenceController      GET /api/ai/test        │
+│  POST /api/intelligence/                                     │
+│       customer-risk                                          │
+│       activity-summary                                       │
+│       opportunity-analysis                                   │
+│       recommended-actions                                    │
+│       dashboard                                              │
 │                                                              │
 │  Responsibilities:                                           │
 │  • Request validation & routing                              │
@@ -143,7 +144,7 @@ Pretty standard layered setup, but the important part is that the AI provider is
 - **Interface-based AI abstraction:** `IAiService` decouples business logic from the AI provider. Switching from OpenAI to Azure OpenAI or Anthropic means writing a new implementation class and changing one DI registration. Controllers don't change at all.
 - **Scoped DI registration:** Each HTTP request gets its own service instance. Clean lifecycle, no thread-safety headaches.
 - **Middleware pipeline:** Cross-cutting concerns (correlation tracking, error handling, authentication) are separated from business logic. Each middleware has a single responsibility.
-- **Minimal API for infrastructure, controllers for business logic:** Health check and AI test use Minimal APIs (less ceremony). The actual business endpoint uses a controller for richer model binding and routing.
+- **Minimal API for infrastructure, controllers for business logic:** Health check, AI test, and sample data endpoints use Minimal APIs organized into `IEndpointRouteBuilder` extension classes (`SampleEndpoints`, `InfrastructureEndpoints`). Business logic endpoints use controllers for richer model binding and validation.
 
 ## Getting Started
 
@@ -199,7 +200,7 @@ You can also change the model and configure API key authentication:
 }
 ```
 
-When `Authentication:ApiKeys` is empty or not configured, API key authentication is disabled (convenient for development).
+When `Authentication:ApiKeys` is empty or not configured, API key authentication is skipped in the Development environment. In non-Development environments, API keys must be configured or all authenticated requests will be rejected.
 
 ### Running the Application
 
@@ -569,7 +570,7 @@ All errors follow [RFC 7807 Problem Details](https://tools.ietf.org/html/rfc7807
 
 - **Responses API over Chat Completions:** The newer `ResponsesClient` has a cleaner interface and better structured output support. Since this project needs machine-readable results (not freeform text), that matters.
 - **.NET 8 over .NET 9:** LTS release. For something heading toward production, stability wins over shiny new features.
-- **No ORM or database yet:** The current phase focuses on the AI analysis pipeline. Persistence comes in Phase 4 when historical data storage is actually needed.
+- **No ORM or database yet:** The current phase focuses on the AI analysis pipeline. Persistence will be added when historical data storage is actually needed.
 
 ## Design Principles
 
@@ -616,6 +617,17 @@ A few things I try to stick to in this project:
 - [x] Opportunity win/loss analysis
 - [x] Recommended next actions engine
 - [x] Management dashboard endpoints
+
+### Security Hardening *(complete)*
+
+- [x] Prompt injection protection with input sanitization
+- [x] Collection size limits (`[MaxLength]`) and request body size cap (5 MB)
+- [x] Timing-safe API key comparison (`CryptographicOperations.FixedTimeEquals`)
+- [x] Enforce API key configuration in non-Development environments
+- [x] Security response headers (X-Content-Type-Options, X-Frame-Options, CSP, Referrer-Policy)
+- [x] Dashboard timeout with 504 Gateway Timeout response
+- [x] Correlation ID format validation (GUID only)
+- [x] Minimal API endpoints organized into `IEndpointRouteBuilder` extension classes
 
 ## Motivation
 

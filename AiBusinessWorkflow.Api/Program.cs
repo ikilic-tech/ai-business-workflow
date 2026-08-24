@@ -1,10 +1,9 @@
 using System.ClientModel;
 using OpenAI.Responses;
-using AiBusinessWorkflow.Api.Data;
+using AiBusinessWorkflow.Api.Endpoints;
 using AiBusinessWorkflow.Api.HealthChecks;
 using AiBusinessWorkflow.Api.Middleware;
 using AiBusinessWorkflow.Api.Services.AI;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,45 +69,8 @@ app.Use(async (context, next) =>
 });
 
 app.MapControllers();
-
-app.MapHealthChecks("/api/health", new HealthCheckOptions
-{
-    ResponseWriter = HealthCheckResponseWriter.WriteAsync
-});
-
-app.MapGet("/api/ai/test", async (IAiService aiService) =>
-{
-    var result = await aiService.TestAiAsync();
-    return Results.Ok(new { status = "success", response = result });
-});
-
-app.MapGet("/api/samples", () => SampleDataGenerator.GetAll());
-
-app.MapGet("/api/samples/{index:int}", (int index) =>
-{
-    var sample = SampleDataGenerator.GetByIndex(index);
-    return sample is not null ? Results.Ok(sample) : Results.NotFound();
-});
-
-app.MapGet("/api/samples/customers", () => BusinessIntelligenceSampleData.GetAllCustomers());
-
-app.MapGet("/api/samples/customers/{index:int}", (int index) =>
-{
-    var sample = BusinessIntelligenceSampleData.GetCustomerByIndex(index);
-    return sample is not null ? Results.Ok(sample) : Results.NotFound();
-});
-
-app.MapGet("/api/samples/opportunities", () => BusinessIntelligenceSampleData.GetAllOpportunities());
-
-app.MapGet("/api/samples/opportunities/{index:int}", (int index) =>
-{
-    var sample = BusinessIntelligenceSampleData.GetOpportunityByIndex(index);
-    return sample is not null ? Results.Ok(sample) : Results.NotFound();
-});
-
-app.MapGet("/api/samples/activities", () => BusinessIntelligenceSampleData.GetActivitySummary());
-
-app.MapGet("/api/samples/actions-context", () => BusinessIntelligenceSampleData.GetActionsContext());
+app.MapInfrastructureEndpoints();
+app.MapSampleEndpoints();
 
 app.Run();
 
