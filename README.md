@@ -1,89 +1,111 @@
 # AI Business Workflow
 
-A .NET 8 Web API that uses AI to analyze business data and turn it into actionable insights — risk detection, follow-up priorities, and recommended next steps.
+An AI-powered .NET 8 Web API that transforms raw business data into actionable insights — risk detection, bottleneck identification, and concrete next steps — so teams can act on their data instead of just collecting it.
 
 ## Overview
 
-Most business applications are good at collecting data — customer records, sales activities, visit notes, opportunities, follow-up dates. But they're not great at telling you what to *do* with it.
+Most business applications excel at collecting data: customer records, sales activities, visit notes, opportunities, follow-up dates. What they lack is the ability to tell you what to *do* with it.
 
-A sales manager might have hundreds of customer activities in the system and still spend time manually figuring out which accounts need attention, which deals are at risk, or where follow-ups have gone cold.
+A sales manager with hundreds of customer activities in the CRM still ends up manually scanning records to figure out which accounts need attention, which deals are stalling, or where follow-ups have gone cold. The data exists; the insight doesn't.
 
-This project is an attempt to close that gap. It takes structured business data, runs it through an AI analysis layer, and returns practical output: risk levels, key observations, and concrete next steps.
+**AI Business Workflow** bridges that gap. It accepts structured business data through a clean REST API, runs it through an AI analysis pipeline, and returns structured, actionable output: efficiency analysis, bottleneck identification, optimization recommendations, and automation opportunities.
 
 ```
 Business Data → Validation & Preparation → AI Analysis → Structured Insights → Recommended Actions
 ```
 
-The idea is that AI should produce something you can actually act on, not just a wall of generated text.
+The core principle: AI output should drive decisions and actions, not generate walls of text.
 
-## Features
+**Target audience:** Engineering teams and business stakeholders in enterprise environments who need to extract value from operational data without building an in-house ML pipeline.
 
-**What's working now:**
-- Business process analysis through OpenAI
-- Structured responses — risk levels, observations, recommended actions
-- Swagger UI for testing endpoints
-- Configurable model selection (GPT-4o, GPT-5.2, etc.)
+## Key Features
+
+**Currently implemented:**
+- Business process analysis via OpenAI's Responses API
+- Structured output — efficiency ratings, bottleneck detection, optimization recommendations, automation opportunities
+- Configurable model selection (GPT-4o, GPT-5.2, or any model supported by the OpenAI SDK)
+- Abstracted AI provider layer (`IAiService` interface) — swap providers without touching business logic
 - Health check and AI connection test endpoints
-- AI layer is behind an interface, so swapping providers is straightforward
+- Interactive API documentation via Swagger UI
 
-**What's coming:**
+**Planned:**
 - Customer risk scoring based on activity patterns
-- Activity summarization for management reports
-- Opportunity analysis
-- Structured JSON schemas for integration with other systems
-- Auth, Docker, CI/CD
+- Activity summarization for management reporting
+- Opportunity win/loss analysis
+- Structured JSON output schemas for downstream system integration
+- Authentication, Docker containerization, and CI/CD pipeline
 
 ## Architecture
 
-Pretty standard layered setup, but the key point is that the AI provider is abstracted behind an interface:
+The project follows a layered architecture with a clear separation between API surface, business logic, and AI provider integration. The key architectural decision is the abstraction of the AI provider behind an interface, making the system provider-agnostic.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    API Layer                         │
-│                                                     │
-│  Controllers          Minimal API Endpoints         │
-│  (BusinessWorkflow)   (/health, /ai/test)           │
-└──────────────────────┬──────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│                 Service Layer                        │
-│                                                     │
-│  IAiService (interface)                              │
-│  └── AiService (implementation)                     │
-│      • Prompt construction                          │
-│      • Response parsing                             │
-│      • Error handling & logging                     │
-└──────────────────────┬──────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│              AI Provider Layer                       │
-│                                                     │
-│  OpenAI Responses API                               │
-│  └── ResponsesClient (SDK v2.13.0)                  │
-│      • Model: configurable (default: gpt-4o)        │
-│      • Credential management via ApiKeyCredential   │
-└──────────────────────┬──────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│              Structured Output                       │
-│                                                     │
-│  • Process efficiency analysis                      │
-│  • Bottleneck identification                        │
-│  • Optimization recommendations                    │
-│  • Automation opportunities                         │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                        API Layer                             │
+│                                                              │
+│  BusinessWorkflowController        Minimal API Endpoints     │
+│  POST /api/business-workflow/      GET /api/health           │
+│       analyze                      GET /api/ai/test          │
+│                                                              │
+│  Responsibilities:                                           │
+│  • Request validation & routing                              │
+│  • HTTP response mapping                                     │
+│  • Swagger/OpenAPI documentation                             │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      Service Layer                           │
+│                                                              │
+│  IAiService (interface)                                      │
+│  ├── AnalyzeBusinessProcessAsync(BusinessProcess)            │
+│  └── TestAiAsync()                                           │
+│                                                              │
+│  AiService (implementation)                                  │
+│  ├── Prompt construction from structured input               │
+│  ├── Response parsing and error handling                     │
+│  └── Structured logging with ILogger<T>                      │
+│                                                              │
+│  Registered via DI (scoped lifetime)                         │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   AI Provider Layer                          │
+│                                                              │
+│  OpenAI Responses API                                        │
+│  └── ResponsesClient (SDK v2.13.0)                           │
+│      • Model: configurable via appsettings (default: gpt-4o) │
+│      • Auth: ApiKeyCredential from configuration             │
+│      • Uses newer Responses API over Chat Completions        │
+│                                                              │
+│  Swappable: Azure OpenAI, Anthropic, local models —          │
+│  implement IAiService, register in DI, done.                 │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    Structured Output                         │
+│                                                              │
+│  • Process efficiency analysis                               │
+│  • Bottleneck identification                                 │
+│  • Optimization recommendations                              │
+│  • Automation opportunities                                  │
+│  • Risk levels and priority rankings (planned)               │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-The `IAiService` interface means you can swap OpenAI for Azure OpenAI, Anthropic, or a local model by changing just the service implementation. Controllers and business logic don't need to know or care which provider is behind it.
+### Why this architecture?
+
+- **Interface-based AI abstraction:** The `IAiService` interface decouples business logic from the AI provider. Switching from OpenAI to Azure OpenAI or Anthropic requires a new implementation class and a single DI registration change — zero modifications to controllers or business logic.
+- **Scoped DI registration:** Each HTTP request gets its own service instance, ensuring thread safety and clean lifecycle management.
+- **Minimal API for infrastructure endpoints:** Health check and AI test endpoints use ASP.NET Core Minimal APIs for low overhead; business endpoints use controllers for richer routing and model binding.
 
 ## Getting Started
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (LTS)
 - An [OpenAI API key](https://platform.openai.com/api-keys)
 
 ### Installation
@@ -105,7 +127,7 @@ Create a local configuration file for your API key:
 cp AiBusinessWorkflow.Api/appsettings.json AiBusinessWorkflow.Api/appsettings.Local.json
 ```
 
-Edit `appsettings.Local.json` and add your OpenAI API key:
+Edit `appsettings.Local.json` and set your OpenAI API key:
 
 ```json
 {
@@ -115,7 +137,19 @@ Edit `appsettings.Local.json` and add your OpenAI API key:
 }
 ```
 
-> `appsettings.Local.json` is loaded at runtime but should be excluded from version control. Never commit API keys to the repository.
+> **Security note:** `appsettings.Local.json` is loaded at runtime but excluded from version control via `.gitignore`. Never commit API keys to the repository.
+
+You can also configure the AI model:
+
+```json
+{
+  "AI": {
+    "Provider": "OpenAI",
+    "Model": "gpt-4o",
+    "ApiKey": "sk-your-api-key-here"
+  }
+}
+```
 
 ### Running the Application
 
@@ -164,7 +198,7 @@ Tests the OpenAI connection with a simple prompt and returns the response.
 POST /api/business-workflow/analyze
 ```
 
-Analyzes a business process using AI and returns optimization suggestions.
+Analyzes a business process using AI and returns structured optimization suggestions.
 
 **Request body:**
 
@@ -188,33 +222,36 @@ Analyzes a business process using AI and returns optimization suggestions.
 
 ## Technology Stack
 
-| Technology | Version | Purpose |
-|---|---|---|
-| .NET | 8.0 | Runtime and Web API framework |
-| OpenAI SDK | 2.13.0 | AI integration via Responses API |
-| Swagger / Swashbuckle | 6.6.2 | Interactive API documentation |
-| C# | 12 | Primary language with modern features |
+| Technology | Version | Purpose | Why |
+|---|---|---|---|
+| .NET | 8.0 (LTS) | Runtime and Web API framework | Long-term support, strong performance for API workloads, mature ecosystem |
+| C# | 12 | Primary language | Modern language features (primary constructors, collection expressions), type safety |
+| OpenAI SDK | 2.13.0 | AI integration | Official SDK with Responses API support — cleaner interface than Chat Completions |
+| Swagger / Swashbuckle | 6.6.2 | Interactive API documentation | Industry-standard API exploration and testing |
+| ASP.NET Core | 8.0 | Web framework | Built-in DI, middleware pipeline, minimal API support |
 
-.NET 8 is an LTS release with solid performance for API workloads. The OpenAI SDK's newer Responses API (`ResponsesClient`) was chosen over the older Chat Completions API because it has a cleaner interface and better support for structured outputs.
+### Technology decisions
+
+- **OpenAI Responses API over Chat Completions:** The newer Responses API (`ResponsesClient`) provides a cleaner interface and better support for structured outputs, which is essential for producing machine-readable analysis results rather than freeform text.
+- **.NET 8 over .NET 9:** Deliberate choice of the LTS release for production stability. The project prioritizes reliability over cutting-edge framework features.
+- **No ORM or database (yet):** The current phase focuses on the AI analysis pipeline. Persistence will be introduced when the business intelligence features (Phase 4) require historical data storage.
 
 ## Design Principles
 
-A few things I try to stick to in this project:
-
-- **AI should be useful, not impressive.** If the output doesn't help someone make a decision or take an action, it's not doing its job.
-- **Humans stay in the loop.** The system suggests — people decide.
-- **Structured over unstructured.** JSON with risk levels and action items beats a paragraph of generated text. It's also much easier to integrate downstream.
-- **Start small.** Get one workflow working properly before adding the next one.
-- **No real data.** Everything in this repo uses synthetic/demo data. No real customer or company information.
+- **AI should be useful, not impressive.** If the output doesn't help someone make a decision or take an action, it's not doing its job. The system produces structured analysis with risk levels and action items, not paragraphs of generated prose.
+- **Humans stay in the loop.** The system suggests — people decide. AI augments human judgment; it doesn't replace it.
+- **Structured over unstructured.** JSON with risk levels, priority rankings, and concrete action items is more valuable than freeform text. Structured output also enables downstream integration with dashboards, alerting systems, and workflow tools.
+- **Start small, iterate.** Get one workflow working end-to-end before adding the next. Each phase builds on proven foundations.
+- **No real data.** Everything in this repository uses synthetic/demo data. No real customer or company information is stored, processed, or committed.
 
 ## Roadmap
 
 ### Phase 1 — Foundation *(mostly complete)*
 
-- [x] Create project repository
-- [x] Define initial workflow
+- [x] Create project repository and solution structure
+- [x] Define initial business workflow model
 - [x] Document architecture
-- [x] Create initial API with health check
+- [x] Create API with health check endpoint
 - [ ] Add sample business data generator
 - [ ] Add unit and integration tests
 
@@ -222,7 +259,7 @@ A few things I try to stick to in this project:
 
 - [x] Add AI analysis service with OpenAI Responses API
 - [x] Add prompt management and construction
-- [x] Handle AI failures and timeouts
+- [x] Handle AI failures and timeouts gracefully
 - [ ] Define structured AI output schemas (JSON)
 - [ ] Add input validation and sanitization
 
@@ -233,32 +270,36 @@ A few things I try to stick to in this project:
 - [ ] Health monitoring and metrics
 - [ ] Docker support
 - [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Better error handling (RFC 7807 problem details)
+- [ ] Error responses following RFC 7807 (Problem Details)
 
 ### Phase 4 — Business Intelligence
 
-- [ ] Customer risk scoring
-- [ ] Activity summarization
+- [ ] Customer risk scoring based on activity patterns
+- [ ] Activity summarization for management reports
 - [ ] Opportunity win/loss analysis
 - [ ] Recommended next actions engine
 - [ ] Management dashboard endpoints
 
-## Why This Project
+## Motivation
 
-I've been building enterprise software for over 20 years — everything from large-scale business systems to SaaS products and mobile apps. One thing I've noticed throughout is that companies are usually pretty good at collecting data, but not nearly as good at doing something useful with it.
+This project grows out of a pattern observed across two decades of building enterprise software — CRM systems, ERP platforms, SaaS products, and mobile applications. The pattern is consistent: organizations invest heavily in data collection but underinvest in data interpretation. The CRM has thousands of customer records; the sales team still relies on intuition and spreadsheets to decide who to call next.
 
-AI is genuinely changing that. Not in a "replace everyone" way, but in a "process 500 customer records and tell me which 10 need attention this week" way. That's the kind of problem this project is trying to solve.
+AI changes this equation. Not by replacing human judgment, but by processing volume that humans can't: scanning 500 customer records to surface the 10 that need attention this week, identifying stalled deals before they're lost, flagging follow-ups that have gone cold.
 
-I wanted to build something concrete rather than just talk about the idea, so here it is: a clean API that takes business data in and gives actionable analysis back. It's also a good way for me to explore how these AI APIs actually work in a real .NET stack, beyond the usual chatbot demos.
+This project is a concrete implementation of that vision: a clean, production-oriented API that takes business data in and returns structured, actionable analysis back. It's also an exploration of how modern AI APIs integrate into a real .NET stack — beyond chatbot demos, toward genuine business utility.
+
+The goal is to demonstrate that AI in enterprise software doesn't have to be a black box or a science project. With the right architecture, it can be a well-tested, provider-agnostic service layer that development teams can integrate, extend, and maintain like any other part of their system.
 
 ## Contributing
 
-Contributions are welcome. Please open an issue first to discuss what you'd like to change — it saves everyone time.
+Contributions are welcome. Please open an issue first to discuss what you'd like to change — it helps align expectations before investing time in implementation.
 
-For bugs, include steps to reproduce. For features, describe the use case. PRs should be focused and follow the existing code style.
+- **Bugs:** Include steps to reproduce, expected vs. actual behavior, and environment details.
+- **Features:** Describe the use case and why it would be valuable.
+- **Pull requests:** Keep them focused on a single concern. Follow the existing code style and conventions.
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
 
-Copyright (c) 2026 İbrahim Kılıç
+Copyright (c) 2026 Ibrahim Kilic
