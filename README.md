@@ -23,10 +23,15 @@ The idea is simple: if AI output doesn't help someone make a decision or take an
 **What's working now:**
 - Business process analysis via OpenAI's Responses API
 - Structured JSON output: efficiency ratings, bottleneck detection, optimization recommendations, automation opportunities
+- Customer risk scoring based on activity patterns and payment history
+- Activity summarization for management reporting
+- Opportunity win/loss analysis with competitive positioning
+- Recommended next actions engine with prioritized action items
+- Management dashboard endpoint (runs all 4 analyses in parallel)
 - Configurable model selection (GPT-4o, GPT-5.2, or any model the OpenAI SDK supports)
 - AI provider is behind an interface (`IAiService`), so swapping to a different provider doesn't touch business logic
 - Input validation with DataAnnotations
-- Sample business data generator with 6 realistic scenarios
+- Sample business data generator with 6 business process scenarios plus BI-specific sample data (customers, opportunities, activities)
 - Health checks with AI connectivity and memory monitoring
 - API key authentication middleware
 - Correlation ID tracking across requests
@@ -34,13 +39,7 @@ The idea is simple: if AI output doesn't help someone make a decision or take an
 - Docker support with multi-stage build
 - CI/CD pipeline with GitHub Actions
 - Swagger UI for interactive API docs
-- 50+ unit and integration tests
-
-**What's coming:**
-- Customer risk scoring based on activity patterns
-- Activity summarization for management reporting
-- Opportunity win/loss analysis
-- Recommended next actions engine
+- 160+ unit and integration tests
 
 ## Architecture
 
@@ -66,7 +65,14 @@ Pretty standard layered setup, but the important part is that the AI provider is
 │  POST /api/business-workflow/      GET /api/health           │
 │       analyze                      GET /api/ai/test          │
 │                                    GET /api/samples          │
-│                                    GET /api/samples/{index}  │
+│  BusinessIntelligenceController    GET /api/samples/{index}  │
+│  POST /api/intelligence/           GET /api/samples/customers│
+│       customer-risk                GET /api/samples/          │
+│       activity-summary                  opportunities        │
+│       opportunity-analysis         GET /api/samples/          │
+│       recommended-actions               activities           │
+│       dashboard                    GET /api/samples/          │
+│                                         actions-context      │
 │                                                              │
 │  Responsibilities:                                           │
 │  • Request validation & routing                              │
@@ -81,6 +87,14 @@ Pretty standard layered setup, but the important part is that the AI provider is
 │  IAiService (interface)                                      │
 │  ├── AnalyzeBusinessProcessAsync(BusinessProcess)            │
 │  │   → returns BusinessProcessAnalysis (structured JSON)     │
+│  ├── AssessCustomerRiskAsync(CustomerProfile)                │
+│  │   → returns CustomerRiskAssessment                        │
+│  ├── SummarizeActivitiesAsync(ActivitySummaryRequest)        │
+│  │   → returns ActivitySummaryReport                         │
+│  ├── AnalyzeOpportunityAsync(Opportunity)                    │
+│  │   → returns OpportunityAnalysisResult                     │
+│  ├── GenerateRecommendedActionsAsync(RecommendedActionsReq)  │
+│  │   → returns RecommendedActionsReport                      │
 │  └── TestAiAsync()                                           │
 │                                                              │
 │  AiService (implementation)                                  │
@@ -114,6 +128,13 @@ Pretty standard layered setup, but the important part is that the AI provider is
 │  • Optimization recommendations (priority, impact, effort)   │
 │  • Automation opportunities (current vs proposed)            │
 │  • Overall risk level and summary                            │
+│                                                              │
+│  Business Intelligence models:                               │
+│  • CustomerRiskAssessment (risk score, churn probability)    │
+│  • ActivitySummaryReport (trends, category breakdown)        │
+│  • OpportunityAnalysisResult (win probability, strategy)     │
+│  • RecommendedActionsReport (prioritized actions, quick wins)│
+│  • DashboardSummary (all analyses combined)                  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -259,6 +280,19 @@ GET /api/samples/{index}
 
 Returns pre-built sample business processes for testing and demonstration. Includes 6 scenarios: customer onboarding, invoice processing, sales lead qualification, IT support, supply chain, and performance reviews.
 
+### Sample Business Intelligence Data
+
+```
+GET /api/samples/customers
+GET /api/samples/customers/{index}
+GET /api/samples/opportunities
+GET /api/samples/opportunities/{index}
+GET /api/samples/activities
+GET /api/samples/actions-context
+```
+
+Returns sample data for business intelligence endpoints. Includes 3 customer profiles (high-value loyal, medium engagement, at-risk churn), 2 sales opportunities (strong pipeline, at-risk deal), a department activity summary, and a recommended actions context.
+
 ### Business Process Analysis
 
 ```
@@ -307,6 +341,191 @@ Analyzes a business process using AI and returns structured optimization insight
   "automationOpportunities": [...],
   "overallRiskLevel": "Medium",
   "summary": "The process is functional but has significant optimization opportunities."
+}
+```
+
+### Customer Risk Assessment
+
+```
+POST /api/intelligence/customer-risk
+```
+
+Assesses customer churn risk based on their profile, payment history, and activity patterns.
+
+**Request body:**
+
+```json
+{
+  "companyName": "TechFlow Solutions",
+  "industry": "Technology",
+  "employeeCount": 450,
+  "annualRevenue": 85000000,
+  "contactName": "Sarah Chen",
+  "contactEmail": "sarah.chen@techflow.com",
+  "accountAge": "4 years",
+  "paymentHistory": "Consistently on time, no missed payments",
+  "activities": [
+    { "type": "Meeting", "date": "2024-01-22", "description": "Quarterly business review", "outcome": "Discussed expansion" }
+  ]
+}
+```
+
+**Response:**
+
+```json
+{
+  "customerId": "...",
+  "companyName": "TechFlow Solutions",
+  "riskScore": 25,
+  "riskLevel": "Low",
+  "churnProbability": "Low",
+  "engagementTrend": "Increasing",
+  "riskFactors": [...],
+  "recommendedActions": ["Continue regular check-ins"],
+  "summary": "Low-risk customer with strong engagement."
+}
+```
+
+### Activity Summary
+
+```
+POST /api/intelligence/activity-summary
+```
+
+Summarizes department activities for a given period with trends and category breakdown.
+
+**Request body:**
+
+```json
+{
+  "department": "Sales",
+  "period": "Q1 2024",
+  "activities": [
+    { "employeeName": "Alice Johnson", "activityType": "Cold Call", "date": "2024-01-08", "duration": "25 minutes", "description": "Outbound call to prospect", "result": "Meeting scheduled" }
+  ]
+}
+```
+
+**Response:**
+
+```json
+{
+  "department": "Sales",
+  "period": "Q1 2024",
+  "totalActivities": 10,
+  "uniqueEmployees": 4,
+  "keyFindings": ["High call volume", "Improved conversion"],
+  "categoryBreakdown": [{ "category": "Calls", "count": 6, "percentage": 60.0 }],
+  "trends": [{ "indicator": "Activity Volume", "direction": "Up", "description": "10% increase" }],
+  "summary": "Strong quarter for sales activities."
+}
+```
+
+### Opportunity Analysis
+
+```
+POST /api/intelligence/opportunity-analysis
+```
+
+Analyzes a sales opportunity and predicts win probability with competitive positioning.
+
+**Request body:**
+
+```json
+{
+  "accountName": "Meridian Healthcare",
+  "dealValue": 250000,
+  "stage": "Proposal Sent",
+  "expectedCloseDate": "2024-04-30",
+  "competitorInfo": "Competing against HealthTech Pro (incumbent)",
+  "notes": "Champion is the CTO. CFO cautious about switching costs.",
+  "activities": [
+    { "type": "Demo", "date": "2024-01-24", "description": "Full platform demo", "contactPerson": "Dr. Patel, CTO" }
+  ]
+}
+```
+
+**Response:**
+
+```json
+{
+  "opportunityId": "...",
+  "accountName": "Meridian Healthcare",
+  "winProbability": 65,
+  "verdict": "Likely Win",
+  "strengths": ["Strong champion", "Good product fit"],
+  "weaknesses": ["Switching cost concerns"],
+  "competitivePosition": "Leading",
+  "recommendedStrategy": [{ "action": "Schedule exec meeting", "priority": "High", "rationale": "Build relationship" }],
+  "nextSteps": ["Send ROI analysis", "Schedule follow-up"],
+  "summary": "Deal is progressing well with strong champion support."
+}
+```
+
+### Recommended Actions
+
+```
+POST /api/intelligence/recommended-actions
+```
+
+Generates prioritized action items based on business context, challenges, and goals.
+
+**Request body:**
+
+```json
+{
+  "businessArea": "Sales Operations",
+  "currentChallenges": "Sales cycle lengthened from 45 to 68 days. Win rate dropped from 32% to 24%.",
+  "availableResources": "12 sales reps, CRM platform, $50K quarterly budget",
+  "goals": "Reduce sales cycle to under 50 days, improve win rate to 30%",
+  "recentMetrics": "Q4 2023: Revenue $2.1M (target $2.5M). Average deal size: $45K."
+}
+```
+
+**Response:**
+
+```json
+{
+  "businessArea": "Sales Operations",
+  "actions": [
+    { "title": "Automate reporting", "priority": "High", "impact": "High", "effort": "Medium", "description": "Implement automated sales reports", "expectedOutcome": "Save 10 hours per week" }
+  ],
+  "quickWins": ["Update CRM templates", "Automate email reminders"],
+  "longTermInitiatives": ["Implement AI-powered lead scoring"],
+  "summary": "Several actionable improvements identified."
+}
+```
+
+### Management Dashboard
+
+```
+POST /api/intelligence/dashboard
+```
+
+Runs multiple analyses in parallel and returns a combined dashboard summary. At least one input must be provided.
+
+**Request body:**
+
+```json
+{
+  "customer": { ... },
+  "opportunity": { ... },
+  "activities": { ... },
+  "actionsContext": { ... }
+}
+```
+
+Each field is optional (nullable). Provide only the analyses you need. The response includes only the analyses that were requested.
+
+**Response:**
+
+```json
+{
+  "generatedAt": "2024-03-15T10:30:00Z",
+  "customerRisk": { ... },
+  "activitySummary": { ... },
+  "opportunityAnalysis": { ... },
+  "recommendedActions": { ... }
 }
 ```
 
@@ -390,13 +609,13 @@ A few things I try to stick to in this project:
 - [x] CI/CD pipeline (GitHub Actions)
 - [x] Error responses following RFC 7807 (Problem Details)
 
-### Phase 4 — Business Intelligence
+### Phase 4 — Business Intelligence *(complete)*
 
-- [ ] Customer risk scoring
-- [ ] Activity summarization
-- [ ] Opportunity win/loss analysis
-- [ ] Recommended next actions engine
-- [ ] Management dashboard endpoints
+- [x] Customer risk scoring
+- [x] Activity summarization
+- [x] Opportunity win/loss analysis
+- [x] Recommended next actions engine
+- [x] Management dashboard endpoints
 
 ## Motivation
 
