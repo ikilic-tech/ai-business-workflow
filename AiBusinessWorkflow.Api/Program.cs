@@ -8,6 +8,11 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 5_242_880; // 5 MB
+});
+
 builder.Configuration.AddJsonFile(
     "appsettings.Local.json",
     optional: true,

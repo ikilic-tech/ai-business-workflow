@@ -14,6 +14,7 @@ public class ActivitySummaryRequest
 
     [Required(ErrorMessage = "Activities is required.")]
     [MinLength(1, ErrorMessage = "At least one activity is required.")]
+    [MaxLength(100, ErrorMessage = "Maximum 100 activities allowed.")]
     public List<ActivityEntry> Activities { get; set; } = new();
 }
 

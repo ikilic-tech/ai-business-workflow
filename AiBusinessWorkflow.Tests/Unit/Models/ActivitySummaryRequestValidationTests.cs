@@ -104,6 +104,23 @@ public class ActivitySummaryRequestValidationTests
     }
 
     [Fact]
+    public void Activities_WhenExceedsMaxLength_ShouldFailValidation()
+    {
+        var request = CreateValidRequest();
+        request.Activities = Enumerable.Range(0, 101).Select(_ => new ActivityEntry
+        {
+            EmployeeName = "Alice Johnson",
+            ActivityType = "Cold Call",
+            Date = "2024-01-08",
+            Duration = "25 minutes",
+            Description = "Outbound call to prospect company",
+            Result = "Meeting scheduled"
+        }).ToList();
+        var results = ValidateModel(request);
+        results.Should().Contain(r => r.MemberNames.Contains("Activities"));
+    }
+
+    [Fact]
     public void AllFieldsEmpty_ShouldFailMultipleValidations()
     {
         var request = new ActivitySummaryRequest

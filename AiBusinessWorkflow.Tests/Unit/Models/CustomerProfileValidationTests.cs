@@ -169,6 +169,21 @@ public class CustomerProfileValidationTests
     }
 
     [Fact]
+    public void Activities_WhenExceedsMaxLength_ShouldFailValidation()
+    {
+        var profile = CreateValidProfile();
+        profile.Activities = Enumerable.Range(0, 101).Select(_ => new CustomerActivity
+        {
+            Type = "Meeting",
+            Date = "2024-01-15",
+            Description = "Quarterly business review meeting",
+            Outcome = "Positive feedback"
+        }).ToList();
+        var results = ValidateModel(profile);
+        results.Should().Contain(r => r.MemberNames.Contains("Activities"));
+    }
+
+    [Fact]
     public void AllFieldsEmpty_ShouldFailMultipleValidations()
     {
         var profile = new CustomerProfile

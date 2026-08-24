@@ -167,6 +167,21 @@ public class OpportunityValidationTests
     }
 
     [Fact]
+    public void Activities_WhenExceedsMaxLength_ShouldFailValidation()
+    {
+        var opportunity = CreateValidOpportunity();
+        opportunity.Activities = Enumerable.Range(0, 101).Select(_ => new OpportunityActivity
+        {
+            Type = "Meeting",
+            Date = "2024-01-15",
+            Description = "Initial discovery call with stakeholders",
+            ContactPerson = "Jane Smith"
+        }).ToList();
+        var results = ValidateModel(opportunity);
+        results.Should().Contain(r => r.MemberNames.Contains("Activities"));
+    }
+
+    [Fact]
     public void AllFieldsEmpty_ShouldFailMultipleValidations()
     {
         var opportunity = new Opportunity
