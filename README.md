@@ -1,5 +1,7 @@
 # AI Business Workflow
 
+**AI Native** — Architecture, code, tests, security hardening, and documentation were built entirely with [Claude Code](https://claude.com/claude-code).
+
 A .NET 8 Web API that uses AI to analyze business data and turn it into actionable insights: risk detection, bottleneck identification, and recommended next steps.
 
 ## Overview
@@ -629,15 +631,30 @@ A few things I try to stick to in this project:
 - [x] Correlation ID format validation (GUID only)
 - [x] Minimal API endpoints organized into `IEndpointRouteBuilder` extension classes
 
+## AI Native Development
+
+This project was built entirely with AI — not as an experiment, but as a deliberate way of working.
+
+Every line of code, every test, every security fix, and this README were written through [Claude Code](https://claude.com/claude-code) (Anthropic's CLI for Claude). The human role was direction, review, and decisions. The AI handled implementation: architecture design, code generation, debugging, test coverage, and OWASP security hardening.
+
+What that looks like in practice:
+- **Planning:** Each phase started with a natural language spec. Claude Code produced the implementation plan, identified the files to create or modify, and proposed the commit structure.
+- **Implementation:** Models, services, controllers, middleware, endpoints, and sample data were all generated in sequence, with builds and tests run after each step.
+- **Testing:** 186 unit and integration tests were written by AI, covering validation boundaries, parse methods, controller behavior, endpoint responses, and security headers.
+- **Security:** An OWASP Top 10 audit was performed by AI agents scanning the codebase in parallel, followed by a 5-step remediation plan that was implemented and verified.
+- **Refactoring:** Code organization improvements (like extracting minimal API endpoints into extension classes) were proposed and executed with full test verification.
+
+The result is a production-grade .NET 8 API with clean architecture, comprehensive test coverage, and security hardening — built through human-AI collaboration where the human steers and the AI builds.
+
 ## Motivation
 
 I've been building enterprise software for over 20 years. CRM systems, ERP platforms, SaaS products, mobile apps. One thing I've seen consistently is that companies are usually good at collecting data, but not nearly as good at doing something useful with it.
 
-AI is changing that. Not in a "replace everyone" way, but in a practical way: process 500 customer records and tell me which 10 need attention this week. Flag the deals that are going cold before someone notices three months later. That's the kind of problem this project is about.
+AI is changing that in two ways. First, as a runtime capability: process 500 customer records and tell me which 10 need attention this week. Flag the deals that are going cold before someone notices three months later. That's what this API does.
 
-I wanted to build something concrete rather than just talk about the idea, so here it is. A clean API that takes business data in and gives structured analysis back. It's also been a good way to dig into how these AI APIs actually work in a real .NET codebase, not just a chatbot tutorial.
+Second, as a development tool. This entire project was built with Claude Code. Not copy-pasting from a chatbot — actual AI-driven software engineering where the AI understands the codebase, maintains context across files, runs builds and tests, and iterates on failures. The human provides direction and makes decisions; the AI does the implementation work.
 
-The longer-term goal is to show that AI in enterprise software can be a normal, well-architected service layer. Not a black box, not a research project. Just another part of the system that teams can test, extend, and maintain.
+I wanted to build something concrete that demonstrates both: AI as the product's core capability *and* AI as the tool that built the product. The longer-term goal is to show that AI in enterprise software can be a normal, well-architected service layer that teams can test, extend, and maintain — and that building it this way is practical today.
 
 ## Contributing
 
