@@ -22,18 +22,25 @@ The idea is simple: if AI output doesn't help someone make a decision or take an
 
 **What's working now:**
 - Business process analysis via OpenAI's Responses API
-- Structured output: efficiency ratings, bottleneck detection, optimization recommendations, automation opportunities
+- Structured JSON output: efficiency ratings, bottleneck detection, optimization recommendations, automation opportunities
 - Configurable model selection (GPT-4o, GPT-5.2, or any model the OpenAI SDK supports)
 - AI provider is behind an interface (`IAiService`), so swapping to a different provider doesn't touch business logic
-- Health check and AI connection test endpoints
+- Input validation with DataAnnotations
+- Sample business data generator with 6 realistic scenarios
+- Health checks with AI connectivity and memory monitoring
+- API key authentication middleware
+- Correlation ID tracking across requests
+- Global exception handling with RFC 7807 ProblemDetails
+- Docker support with multi-stage build
+- CI/CD pipeline with GitHub Actions
 - Swagger UI for interactive API docs
+- 50+ unit and integration tests
 
 **What's coming:**
 - Customer risk scoring based on activity patterns
 - Activity summarization for management reporting
 - Opportunity win/loss analysis
-- Structured JSON output schemas for integration with other systems
-- Authentication, Docker, CI/CD
+- Recommended next actions engine
 
 ## Architecture
 
@@ -41,11 +48,25 @@ Pretty standard layered setup, but the important part is that the AI provider is
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
+│                     Middleware Pipeline                       │
+│                                                              │
+│  CorrelationIdMiddleware → ExceptionHandlingMiddleware →     │
+│  ApiKeyAuthMiddleware                                        │
+│                                                              │
+│  • X-Correlation-Id tracking                                 │
+│  • RFC 7807 ProblemDetails error responses                   │
+│  • X-Api-Key authentication                                  │
+└────────────────────────────┬─────────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
 │                        API Layer                             │
 │                                                              │
 │  BusinessWorkflowController        Minimal API Endpoints     │
 │  POST /api/business-workflow/      GET /api/health           │
 │       analyze                      GET /api/ai/test          │
+│                                    GET /api/samples          │
+│                                    GET /api/samples/{index}  │
 │                                                              │
 │  Responsibilities:                                           │
 │  • Request validation & routing                              │
@@ -59,11 +80,12 @@ Pretty standard layered setup, but the important part is that the AI provider is
 │                                                              │
 │  IAiService (interface)                                      │
 │  ├── AnalyzeBusinessProcessAsync(BusinessProcess)            │
+│  │   → returns BusinessProcessAnalysis (structured JSON)     │
 │  └── TestAiAsync()                                           │
 │                                                              │
 │  AiService (implementation)                                  │
-│  ├── Prompt construction from structured input               │
-│  ├── Response parsing and error handling                     │
+│  ├── Prompt construction with JSON schema                    │
+│  ├── Response parsing and deserialization                    │
 │  └── Structured logging with ILogger<T>                      │
 │                                                              │
 │  Registered via DI (scoped lifetime)                         │
@@ -86,11 +108,12 @@ Pretty standard layered setup, but the important part is that the AI provider is
 ┌──────────────────────────────────────────────────────────────┐
 │                    Structured Output                         │
 │                                                              │
-│  • Process efficiency analysis                               │
-│  • Bottleneck identification                                 │
-│  • Optimization recommendations                              │
-│  • Automation opportunities                                  │
-│  • Risk levels and priority rankings (planned)               │
+│  BusinessProcessAnalysis model:                              │
+│  • Process efficiency analysis (score, rating, explanation)  │
+│  • Bottleneck identification (area, severity, fix)           │
+│  • Optimization recommendations (priority, impact, effort)   │
+│  • Automation opportunities (current vs proposed)            │
+│  • Overall risk level and summary                            │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -98,6 +121,7 @@ Pretty standard layered setup, but the important part is that the AI provider is
 
 - **Interface-based AI abstraction:** `IAiService` decouples business logic from the AI provider. Switching from OpenAI to Azure OpenAI or Anthropic means writing a new implementation class and changing one DI registration. Controllers don't change at all.
 - **Scoped DI registration:** Each HTTP request gets its own service instance. Clean lifecycle, no thread-safety headaches.
+- **Middleware pipeline:** Cross-cutting concerns (correlation tracking, error handling, authentication) are separated from business logic. Each middleware has a single responsibility.
 - **Minimal API for infrastructure, controllers for business logic:** Health check and AI test use Minimal APIs (less ceremony). The actual business endpoint uses a controller for richer model binding and routing.
 
 ## Getting Started
@@ -106,6 +130,7 @@ Pretty standard layered setup, but the important part is that the AI provider is
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (LTS)
 - An [OpenAI API key](https://platform.openai.com/api-keys)
+- (Optional) [Docker](https://www.docker.com/) for containerized deployment
 
 ### Installation
 
@@ -138,7 +163,7 @@ Edit `appsettings.Local.json` and add your OpenAI API key:
 
 > `appsettings.Local.json` is loaded at runtime but excluded from version control via `.gitignore`. Don't commit API keys.
 
-You can also change the model:
+You can also change the model and configure API key authentication:
 
 ```json
 {
@@ -146,9 +171,14 @@ You can also change the model:
     "Provider": "OpenAI",
     "Model": "gpt-4o",
     "ApiKey": "sk-your-api-key-here"
+  },
+  "Authentication": {
+    "ApiKeys": ["your-api-key-here"]
   }
 }
 ```
+
+When `Authentication:ApiKeys` is empty or not configured, API key authentication is disabled (convenient for development).
 
 ### Running the Application
 
@@ -159,6 +189,21 @@ dotnet run
 
 The API will be available at `http://localhost:5221`. In development mode, Swagger UI is at `http://localhost:5221/swagger`.
 
+### Running with Docker
+
+```bash
+# Build and run
+AI_API_KEY=sk-your-key docker compose up --build
+
+# The API will be available at http://localhost:8080
+```
+
+### Running Tests
+
+```bash
+dotnet test
+```
+
 ## API Reference
 
 ### Health Check
@@ -167,12 +212,26 @@ The API will be available at `http://localhost:5221`. In development mode, Swagg
 GET /api/health
 ```
 
-Returns service health status.
+Returns detailed health status including AI connectivity and memory usage.
 
 ```json
 {
-  "status": "ok",
-  "service": "AiBusinessWorkflow.Api"
+  "status": "Healthy",
+  "totalDuration": 245.12,
+  "entries": [
+    {
+      "name": "ai",
+      "status": "Healthy",
+      "description": "AI service is reachable.",
+      "data": { "provider": "OpenAI", "model": "gpt-4o" }
+    },
+    {
+      "name": "memory",
+      "status": "Healthy",
+      "description": "Memory usage is normal: 42.5 MB",
+      "data": { "allocatedMB": 42.5 }
+    }
+  ]
 }
 ```
 
@@ -191,13 +250,22 @@ Tests the OpenAI connection with a simple prompt and returns the response.
 }
 ```
 
+### Sample Business Data
+
+```
+GET /api/samples
+GET /api/samples/{index}
+```
+
+Returns pre-built sample business processes for testing and demonstration. Includes 6 scenarios: customer onboarding, invoice processing, sales lead qualification, IT support, supply chain, and performance reviews.
+
 ### Business Process Analysis
 
 ```
 POST /api/business-workflow/analyze
 ```
 
-Analyzes a business process using AI and returns optimization suggestions.
+Analyzes a business process using AI and returns structured optimization insights.
 
 **Request body:**
 
@@ -210,12 +278,56 @@ Analyzes a business process using AI and returns optimization suggestions.
 }
 ```
 
+**Validation rules:**
+- `name`: Required, 3-200 characters
+- `description`: Required, 10-2000 characters
+- `inputData`: Required, 5-5000 characters
+- `goal`: Required, 5-1000 characters
+
 **Response:**
 
 ```json
 {
   "processId": "aa333b9f-aad7-4e82-9ca4-0a41a7f018bc",
-  "analysis": "1. Process efficiency analysis... 2. Potential bottlenecks... 3. Optimization recommendations... 4. Automation opportunities..."
+  "processName": "Customer Onboarding",
+  "efficiency": {
+    "score": 72,
+    "rating": "Medium",
+    "explanation": "Process has moderate efficiency with room for improvement."
+  },
+  "bottlenecks": [
+    {
+      "area": "Manual Data Entry",
+      "severity": "High",
+      "description": "Data is entered manually causing delays.",
+      "suggestedFix": "Implement OCR-based data extraction."
+    }
+  ],
+  "recommendations": [...],
+  "automationOpportunities": [...],
+  "overallRiskLevel": "Medium",
+  "summary": "The process is functional but has significant optimization opportunities."
+}
+```
+
+### Authentication
+
+Protected endpoints require an `X-Api-Key` header when API keys are configured.
+
+Public endpoints (no auth required): `/api/health`, `/api/samples`, `/swagger`
+
+### Error Responses
+
+All errors follow [RFC 7807 Problem Details](https://tools.ietf.org/html/rfc7807):
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7807",
+  "title": "An unexpected error occurred",
+  "status": 500,
+  "detail": "An internal error occurred. Please try again later.",
+  "instance": "/api/business-workflow/analyze",
+  "correlationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 }
 ```
 
@@ -228,6 +340,11 @@ Analyzes a business process using AI and returns optimization suggestions.
 | OpenAI SDK | 2.13.0 | AI integration | Official SDK, supports the newer Responses API |
 | Swagger / Swashbuckle | 6.6.2 | API documentation | Industry standard for interactive API testing |
 | ASP.NET Core | 8.0 | Web framework | Built-in DI, middleware pipeline, minimal API support |
+| xUnit | 2.5.3 | Test framework | Clean syntax, good tooling integration |
+| FluentAssertions | 6.12.2 | Test assertions | Readable assertion syntax |
+| Moq | 4.20.72 | Mocking framework | Interface-based mocking for unit tests |
+| Docker | Multi-stage | Containerization | Consistent deployment environments |
+| GitHub Actions | - | CI/CD | Automated build, test, and artifact publishing |
 
 ### Technology decisions
 
@@ -247,31 +364,31 @@ A few things I try to stick to in this project:
 
 ## Roadmap
 
-### Phase 1 — Foundation *(mostly complete)*
+### Phase 1 — Foundation *(complete)*
 
 - [x] Create project repository and solution structure
 - [x] Define initial business workflow model
 - [x] Document architecture
 - [x] Create API with health check endpoint
-- [ ] Add sample business data generator
-- [ ] Add unit and integration tests
+- [x] Add sample business data generator
+- [x] Add unit and integration tests
 
-### Phase 2 — AI Integration *(in progress)*
+### Phase 2 — AI Integration *(complete)*
 
 - [x] Add AI analysis service with OpenAI Responses API
 - [x] Add prompt management and construction
 - [x] Handle AI failures and timeouts
-- [ ] Define structured AI output schemas (JSON)
-- [ ] Add input validation and sanitization
+- [x] Define structured AI output schemas (JSON)
+- [x] Add input validation and sanitization
 
-### Phase 3 — Production Readiness
+### Phase 3 — Production Readiness *(complete)*
 
-- [ ] Authentication and API key management
-- [ ] Structured logging with correlation IDs
-- [ ] Health monitoring and metrics
-- [ ] Docker support
-- [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Error responses following RFC 7807 (Problem Details)
+- [x] Authentication and API key management
+- [x] Structured logging with correlation IDs
+- [x] Health monitoring and metrics
+- [x] Docker support
+- [x] CI/CD pipeline (GitHub Actions)
+- [x] Error responses following RFC 7807 (Problem Details)
 
 ### Phase 4 — Business Intelligence
 
