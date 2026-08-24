@@ -1,0 +1,13 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - AI__Provider=OpenAI
+      - AI__Model=gpt-4o
+      - AI__ApiKey=${AI_API_KEY:-}
+      - Authentication__ApiKeys__0=${API_KEY:-}

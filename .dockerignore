@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/.idea
+**/node_modules
+*.md
+LICENSE
+appsettings.Local.json
