@@ -18,17 +18,12 @@ public class BusinessWorkflowController : ControllerBase
     }
 
     [HttpPost("analyze")]
-    public async Task<IActionResult> Analyze(BusinessProcess process)
+    public async Task<ActionResult<BusinessProcessAnalysis>> Analyze(BusinessProcess process)
     {
         try
         {
             var result = await _aiService.AnalyzeBusinessProcessAsync(process);
-
-            return Ok(new
-            {
-                processId = process.Id,
-                analysis = result
-            });
+            return Ok(result);
         }
         catch (Exception ex)
         {
