@@ -195,19 +195,70 @@ The project will use synthetic data for demonstration purposes.
 }
 ```
 
+## API Endpoints
+
+### Health Check
+
+```
+GET /api/health
+```
+
+Returns service health status.
+
+```json
+{"status":"ok","service":"AiBusinessWorkflow.Api"}
+```
+
+### AI Connection Test
+
+```
+GET /api/ai/test
+```
+
+Tests the OpenAI connection with a simple prompt and returns the response.
+
+```json
+{"status":"success","response":"Hello! How can I assist you today?"}
+```
+
+### Business Process Analysis
+
+```
+POST /api/business-workflow/analyze
+```
+
+Analyzes a business process using AI and returns optimization suggestions.
+
+**Request body:**
+
+```json
+{
+  "name": "Customer Onboarding",
+  "description": "New customer registration and activation process",
+  "inputData": "Customer form, ID document, email verification",
+  "goal": "Reduce registration time and increase customer satisfaction"
+}
+```
+
+**Response:**
+
+```json
+{
+  "processId": "aa333b9f-aad7-4e82-9ca4-0a41a7f018bc",
+  "analysis": "1. Process efficiency analysis... 2. Potential bottlenecks... 3. Optimization recommendations... 4. Automation opportunities..."
+}
+```
+
 ## Technology
 
 The technology stack will evolve during development.
 
-Initial focus:
+Current stack:
 
-- API-based architecture
-- REST APIs
-- AI / LLM integration
-- Structured JSON data
-- Automated testing
-- Docker
-- CI/CD
+- .NET 8 Web API
+- OpenAI API (Responses API via `ResponsesClient`)
+- Swagger / OpenAPI
+- User Secrets for local API key management
 
 The project will prioritize clear architecture and maintainability over adding unnecessary technologies.
 
@@ -247,16 +298,16 @@ No real customer or company data is included in this repository.
 - [x] Define initial workflow
 - [x] Document architecture
 - [ ] Add sample business data
-- [ ] Create initial API
+- [x] Create initial API
 - [ ] Add basic tests
 
 ### Phase 2 — AI Integration
 
-- [ ] Add AI analysis service
+- [x] Add AI analysis service
 - [ ] Define structured AI output
-- [ ] Add prompt management
+- [x] Add prompt management
 - [ ] Add validation
-- [ ] Handle AI failures and timeouts
+- [x] Handle AI failures and timeouts
 
 ### Phase 3 — Production-oriented Architecture
 
