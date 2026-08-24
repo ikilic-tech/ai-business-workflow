@@ -1,0 +1,10 @@
+bin/
+obj/
+
+appsettings.Local.json
+
+.idea/
+*.user
+*.suo
+
+.claude/
