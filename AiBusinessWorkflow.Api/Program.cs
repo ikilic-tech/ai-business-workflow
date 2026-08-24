@@ -1,5 +1,6 @@
 using System.ClientModel;
 using OpenAI.Responses;
+using AiBusinessWorkflow.Api.Data;
 using AiBusinessWorkflow.Api.Services.AI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,14 @@ app.MapGet("/api/ai/test", async (IAiService aiService) =>
             title: "AI Test Failed",
             statusCode: 500);
     }
+});
+
+app.MapGet("/api/samples", () => SampleDataGenerator.GetAll());
+
+app.MapGet("/api/samples/{index:int}", (int index) =>
+{
+    var sample = SampleDataGenerator.GetByIndex(index);
+    return sample is not null ? Results.Ok(sample) : Results.NotFound();
 });
 
 app.Run();
