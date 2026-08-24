@@ -20,11 +20,11 @@ public class HealthEndpointTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task HealthEndpoint_ShouldReturnJsonContent()
+    public async Task HealthEndpoint_ShouldReturnJsonWithStatus()
     {
         var response = await _client.GetAsync("/api/health");
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("ok");
-        content.Should().Contain("AiBusinessWorkflow.Api");
+        content.Should().Contain("status");
+        content.Should().Contain("entries");
     }
 }

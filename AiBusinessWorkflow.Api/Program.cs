@@ -1,8 +1,10 @@
 using System.ClientModel;
 using OpenAI.Responses;
 using AiBusinessWorkflow.Api.Data;
+using AiBusinessWorkflow.Api.HealthChecks;
 using AiBusinessWorkflow.Api.Middleware;
 using AiBusinessWorkflow.Api.Services.AI;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,10 @@ else
 }
 builder.Services.AddScoped<IAiService, AiService>();
 
+builder.Services.AddHealthChecks()
+    .AddCheck<AiHealthCheck>("ai", tags: new[] { "ready" })
+    .AddCheck<MemoryHealthCheck>("memory", tags: new[] { "ready" });
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -45,10 +51,9 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-app.MapGet("/api/health", () => new
+app.MapHealthChecks("/api/health", new HealthCheckOptions
 {
-    status = "ok",
-    service = "AiBusinessWorkflow.Api"
+    ResponseWriter = HealthCheckResponseWriter.WriteAsync
 });
 
 app.MapGet("/api/ai/test", async (IAiService aiService) =>
