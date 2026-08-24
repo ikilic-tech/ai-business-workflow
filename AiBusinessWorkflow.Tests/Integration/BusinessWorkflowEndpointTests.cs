@@ -143,4 +143,51 @@ public class BusinessWorkflowEndpointTests : IClassFixture<CustomWebApplicationF
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("success");
     }
+
+    [Fact]
+    public async Task Response_ShouldContainSecurityHeaders()
+    {
+        var response = await _client.GetAsync("/api/samples");
+
+        response.Headers.Should().ContainKey("X-Content-Type-Options");
+        response.Headers.GetValues("X-Content-Type-Options").Should().Contain("nosniff");
+        response.Headers.Should().ContainKey("X-Frame-Options");
+        response.Headers.GetValues("X-Frame-Options").Should().Contain("DENY");
+    }
+
+    [Fact]
+    public async Task Response_ShouldContainCorrelationId()
+    {
+        var response = await _client.GetAsync("/api/samples");
+
+        response.Headers.Should().ContainKey("X-Correlation-Id");
+        var correlationId = response.Headers.GetValues("X-Correlation-Id").First();
+        Guid.TryParse(correlationId, out _).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Request_WithInvalidCorrelationId_ShouldGetNewGuid()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/samples");
+        request.Headers.Add("X-Correlation-Id", "not-a-guid-value");
+        var response = await _client.SendAsync(request);
+
+        response.Headers.Should().ContainKey("X-Correlation-Id");
+        var correlationId = response.Headers.GetValues("X-Correlation-Id").First();
+        correlationId.Should().NotBe("not-a-guid-value");
+        Guid.TryParse(correlationId, out _).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Request_WithValidCorrelationId_ShouldPreserveIt()
+    {
+        var expectedId = Guid.NewGuid().ToString();
+        var request = new HttpRequestMessage(HttpMethod.Get, "/api/samples");
+        request.Headers.Add("X-Correlation-Id", expectedId);
+        var response = await _client.SendAsync(request);
+
+        response.Headers.Should().ContainKey("X-Correlation-Id");
+        var correlationId = response.Headers.GetValues("X-Correlation-Id").First();
+        correlationId.Should().Be(expectedId);
+    }
 }

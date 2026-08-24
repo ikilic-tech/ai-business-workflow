@@ -324,6 +324,19 @@ public class BusinessIntelligenceControllerTests
     }
 
     [Fact]
+    public async Task Dashboard_ShouldReturnCorrectType()
+    {
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+            .ReturnsAsync(CreateSampleRiskAssessment());
+
+        var request = new DashboardRequest { Customer = CreateValidCustomer() };
+
+        var result = await _controller.GenerateDashboard(request);
+
+        result.Should().BeOfType<ActionResult<DashboardSummary>>();
+    }
+
+    [Fact]
     public async Task Dashboard_WithPartialInputs_ShouldReturnOnlyRequestedResults()
     {
         _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))

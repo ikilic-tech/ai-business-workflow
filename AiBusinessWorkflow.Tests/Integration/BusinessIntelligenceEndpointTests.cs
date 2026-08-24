@@ -386,4 +386,31 @@ public class BusinessIntelligenceEndpointTests : IClassFixture<CustomWebApplicat
         context.Should().NotBeNull();
         context!.BusinessArea.Should().NotBeNullOrEmpty();
     }
+
+    [Fact]
+    public async Task IntelligenceEndpoint_ShouldContainSecurityHeaders()
+    {
+        var customer = new
+        {
+            companyName = "Test Corp",
+            industry = "Technology",
+            employeeCount = 100,
+            annualRevenue = 5000000,
+            contactName = "John Doe",
+            contactEmail = "john@test.com",
+            accountAge = "2 years",
+            paymentHistory = "Always on time payments",
+            activities = new[]
+            {
+                new { type = "Meeting", date = "2024-01-15", description = "Quarterly review meeting", outcome = "Positive feedback" }
+            }
+        };
+
+        var response = await _client.PostAsJsonAsync("/api/intelligence/customer-risk", customer);
+
+        response.Headers.Should().ContainKey("X-Content-Type-Options");
+        response.Headers.GetValues("X-Content-Type-Options").Should().Contain("nosniff");
+        response.Headers.Should().ContainKey("X-Frame-Options");
+        response.Headers.GetValues("X-Frame-Options").Should().Contain("DENY");
+    }
 }
