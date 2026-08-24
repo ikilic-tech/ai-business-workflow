@@ -1,201 +1,155 @@
 # AI Business Workflow
 
-An AI-powered workflow for turning business data into actionable decisions.
+An AI-powered .NET 8 Web API that transforms raw business data into structured, actionable insights — helping teams identify risks, prioritize opportunities, and decide what to do next.
 
 ## Overview
 
-Business applications collect a large amount of information every day: customer visits, sales activities, notes, opportunities and follow-up actions.
+### The Problem
 
-The problem is not always collecting the data.
+Business applications are effective at collecting data: customer records, sales activities, visit notes, opportunities, tasks, and follow-up dates. Most organizations have no shortage of information.
 
-The problem is understanding it.
+The gap is in **understanding** that information.
 
-This project explores how AI can analyze structured business data and turn it into practical insights that can help teams decide what to do next.
+A sales manager with hundreds of customer activities still needs to manually review them to answer critical questions:
 
-The goal is to keep the workflow simple:
-
-**Business Data → AI Analysis → Insights → Recommended Actions**
-
-## The Problem
-
-Traditional business applications are good at storing information.
-
-For example:
-
-- Customer records
-- Sales activities
-- Visit notes
-- Opportunities
-- Tasks
-- Follow-up dates
-
-But storing information does not necessarily mean that the information is being used effectively.
-
-A manager may have hundreds of activities in a system but still need to manually review them to answer questions such as:
-
-- Which customers need attention?
+- Which customers need immediate attention?
 - Which opportunities are at risk?
-- Which activities require follow-up?
-- What changed recently?
-- What should the sales team focus on next?
+- Where are follow-ups overdue?
+- What changed recently that requires action?
+- What should the team focus on this week?
 
-This project explores how AI can help answer these questions.
+These questions require pattern recognition across large volumes of operational data — exactly the kind of task where AI can add practical value.
 
-## How It Works
+### The Solution
 
-The initial workflow is designed around four steps.
+AI Business Workflow provides a structured pipeline that sits between business data and decision-making:
 
-### 1. Collect
-
-The system receives structured business data such as customer activities and visit notes.
-
-### 2. Analyze
-
-The data is processed and sent to an AI analysis layer.
-
-### 3. Generate Insights
-
-The AI produces structured results such as:
-
-- Summary
-- Risks
-- Important observations
-- Suggested priorities
-
-### 4. Recommend Actions
-
-The system converts the analysis into practical next steps.
-
-For example:
-
-```text
-Customer: Example Company
-
-Recent activity:
-- Sales visit
-- Product discussion
-- Follow-up requested
-- No activity for 21 days
-
-AI analysis:
-
-Risk:
-High
-
-Reason:
-The customer requested a follow-up but no recent activity was recorded.
-
-Recommended action:
-Contact the customer and schedule a follow-up meeting.
 ```
+Business Data → Validation & Preparation → AI Analysis → Structured Insights → Recommended Actions
+```
+
+Rather than generating generic text, the system produces **structured outputs** — risk levels, prioritized observations, and concrete next steps — that integrate naturally into existing business workflows.
+
+### Who Is This For?
+
+- **Enterprise teams** looking to extract actionable intelligence from operational data
+- **Sales managers** who need automated risk detection and follow-up tracking
+- **Technical leaders** evaluating how to integrate AI into business processes without disrupting existing systems
+
+## Key Features
+
+**Current:**
+- Business process analysis via OpenAI integration
+- Structured AI responses with risk detection, observations, and recommended actions
+- RESTful API with Swagger/OpenAPI documentation
+- Configurable AI model selection (supports GPT-4o, GPT-5.2, and future models)
+- Health check and AI connectivity verification endpoints
+- Clean separation between business logic and AI layer
+
+**Planned:**
+- Customer risk scoring based on activity patterns
+- Automated activity summarization for management reporting
+- Opportunity analysis with win/loss probability indicators
+- Structured JSON output schemas for downstream integration
+- Authentication and role-based access control
+- Docker containerization and CI/CD pipeline
 
 ## Architecture
 
-The initial architecture is intentionally simple.
+The system follows a layered architecture that keeps business logic independent from the AI provider:
 
-```text
-+----------------------+
-|   Business Data      |
-|                      |
-| Customers            |
-| Activities           |
-| Opportunities        |
-| Visit Notes          |
-+----------+-----------+
-           |
-           v
-+----------------------+
-|   Workflow Layer     |
-|                      |
-| Data validation      |
-| Data preparation     |
-| Business rules       |
-+----------+-----------+
-           |
-           v
-+----------------------+
-|     AI Analysis      |
-|                      |
-| Summary              |
-| Risk detection       |
-| Recommendations      |
-+----------+-----------+
-           |
-           v
-+----------------------+
-|   Actionable Output  |
-|                      |
-| Insights             |
-| Priorities           |
-| Next actions         |
-+----------------------+
+```
+┌─────────────────────────────────────────────────────┐
+│                    API Layer                         │
+│                                                     │
+│  Controllers          Minimal API Endpoints         │
+│  (BusinessWorkflow)   (/health, /ai/test)           │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│                 Service Layer                        │
+│                                                     │
+│  IAiService (interface)                              │
+│  └── AiService (implementation)                     │
+│      • Prompt construction                          │
+│      • Response parsing                             │
+│      • Error handling & logging                     │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              AI Provider Layer                       │
+│                                                     │
+│  OpenAI Responses API                               │
+│  └── ResponsesClient (SDK v2.13.0)                  │
+│      • Model: configurable (default: gpt-4o)        │
+│      • Credential management via ApiKeyCredential   │
+└──────────────────────┬──────────────────────────────┘
+                       │
+                       ▼
+┌─────────────────────────────────────────────────────┐
+│              Structured Output                       │
+│                                                     │
+│  • Process efficiency analysis                      │
+│  • Bottleneck identification                        │
+│  • Optimization recommendations                    │
+│  • Automation opportunities                         │
+└─────────────────────────────────────────────────────┘
 ```
 
-The architecture may evolve as the project grows.
+**Why this structure?**
 
-## Example Use Cases
+The `IAiService` interface decouples the API layer from any specific AI provider. Swapping OpenAI for Azure OpenAI, Anthropic, or a local model requires changing only the service implementation — controllers and business logic remain untouched. This is a deliberate architectural choice for long-term maintainability in enterprise environments where vendor lock-in is a real concern.
 
-### Sales Activity Analysis
+## Getting Started
 
-Analyze recent customer activities and identify accounts that may require attention.
+### Prerequisites
 
-### Customer Follow-up
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- An [OpenAI API key](https://platform.openai.com/api-keys)
 
-Detect customers where a follow-up action appears to be missing or overdue.
+### Installation
 
-### Opportunity Risk
+```bash
+# Clone the repository
+git clone https://github.com/ibrahimkilic/AiBusinessWorkflow.git
+cd AiBusinessWorkflow
 
-Analyze opportunity information and highlight potential risks.
+# Restore dependencies
+dotnet restore
+```
 
-### Field Operations
+### Configuration
 
-Summarize field activity and identify patterns that may require managerial attention.
+Create a local configuration file for your API key:
 
-### Management Summary
+```bash
+cp AiBusinessWorkflow.Api/appsettings.json AiBusinessWorkflow.Api/appsettings.Local.json
+```
 
-Turn a large amount of operational data into a short summary that can be reviewed quickly.
-
-## Example Input
-
-The project will use synthetic data for demonstration purposes.
+Edit `appsettings.Local.json` and add your OpenAI API key:
 
 ```json
 {
-  "customer": "Example Company",
-  "activities": [
-    {
-      "type": "visit",
-      "date": "2026-08-10",
-      "note": "Discussed renewal and additional users."
-    },
-    {
-      "type": "follow_up",
-      "date": "2026-08-12",
-      "note": "Customer requested a proposal."
-    }
-  ]
+  "AI": {
+    "ApiKey": "sk-your-api-key-here"
+  }
 }
 ```
 
-## Example Output
+> `appsettings.Local.json` is loaded at runtime but should be excluded from version control. Never commit API keys to the repository.
 
-```json
-{
-  "summary": "The customer is evaluating a renewal and additional users.",
-  "risk": "medium",
-  "observations": [
-    "A proposal was requested.",
-    "No follow-up activity was recorded after the request."
-  ],
-  "recommended_actions": [
-    "Contact the customer.",
-    "Confirm proposal status.",
-    "Schedule a follow-up meeting."
-  ]
-}
+### Running the Application
+
+```bash
+cd AiBusinessWorkflow.Api
+dotnet run
 ```
 
-## API Endpoints
+The API will be available at `http://localhost:5221`. In development mode, Swagger UI is accessible at `http://localhost:5221/swagger`.
+
+## API Reference
 
 ### Health Check
 
@@ -206,7 +160,10 @@ GET /api/health
 Returns service health status.
 
 ```json
-{"status":"ok","service":"AiBusinessWorkflow.Api"}
+{
+  "status": "ok",
+  "service": "AiBusinessWorkflow.Api"
+}
 ```
 
 ### AI Connection Test
@@ -218,7 +175,10 @@ GET /api/ai/test
 Tests the OpenAI connection with a simple prompt and returns the response.
 
 ```json
-{"status":"success","response":"Hello! How can I assist you today?"}
+{
+  "status": "success",
+  "response": "Hello! How can I assist you today?"
+}
 ```
 
 ### Business Process Analysis
@@ -249,101 +209,100 @@ Analyzes a business process using AI and returns optimization suggestions.
 }
 ```
 
-## Technology
+## Technology Stack
 
-The technology stack will evolve during development.
+| Technology | Version | Purpose |
+|---|---|---|
+| .NET | 8.0 | Runtime and Web API framework |
+| OpenAI SDK | 2.13.0 | AI integration via Responses API |
+| Swagger / Swashbuckle | 6.6.2 | Interactive API documentation |
+| C# | 12 | Primary language with modern features |
 
-Current stack:
+**Why .NET 8?** Long-term support, high performance for API workloads, strong typing that reduces runtime errors in enterprise systems, and mature ecosystem for building production services.
 
-- .NET 8 Web API
-- OpenAI API (Responses API via `ResponsesClient`)
-- Swagger / OpenAPI
-- User Secrets for local API key management
-
-The project will prioritize clear architecture and maintainability over adding unnecessary technologies.
+**Why OpenAI Responses API?** The newer Responses API (via `ResponsesClient`) provides a cleaner interface compared to the legacy Chat Completions API, with built-in support for structured outputs — which aligns with this project's goal of returning actionable data rather than unstructured text.
 
 ## Design Principles
 
-A few principles guide the project.
-
 ### Keep AI Useful
 
-AI should not simply generate text.
-
-The output should help someone make a decision or take an action.
+AI should not simply generate text. The output should help someone make a decision or take an action. Every AI response in this system is structured around concrete recommendations.
 
 ### Keep Humans in the Loop
 
-AI-generated recommendations should support people rather than replace business judgment.
+AI-generated recommendations support people rather than replace business judgment. The system provides analysis and suggestions — the final decision remains with the team.
 
 ### Use Structured Outputs
 
-Where possible, AI responses should be returned as structured data rather than unstructured text.
+Where possible, AI responses are returned as structured data rather than unstructured text. This makes downstream integration, filtering, and automation possible.
 
-### Start Small
+### Start Small, Then Iterate
 
-The first version focuses on a small workflow that can be tested and improved before adding more complexity.
+The first version focuses on a single, testable workflow. Each addition is validated before introducing more complexity. This approach reduces risk and produces a system where every component has been proven in practice.
 
 ### Protect Business Data
 
-The demonstration environment will use synthetic data.
-
-No real customer or company data is included in this repository.
+The demonstration environment uses only synthetic data. No real customer or company data is included in this repository.
 
 ## Roadmap
 
-### Phase 1 — Foundation
+### Phase 1 — Foundation *(mostly complete)*
 
 - [x] Create project repository
 - [x] Define initial workflow
 - [x] Document architecture
-- [ ] Add sample business data
-- [x] Create initial API
-- [ ] Add basic tests
+- [x] Create initial API with health check
+- [ ] Add sample business data generator
+- [ ] Add unit and integration tests
 
-### Phase 2 — AI Integration
+### Phase 2 — AI Integration *(in progress)*
 
-- [x] Add AI analysis service
-- [ ] Define structured AI output
-- [x] Add prompt management
-- [ ] Add validation
+- [x] Add AI analysis service with OpenAI Responses API
+- [x] Add prompt management and construction
 - [x] Handle AI failures and timeouts
+- [ ] Define structured AI output schemas (JSON)
+- [ ] Add input validation and sanitization
 
-### Phase 3 — Production-oriented Architecture
+### Phase 3 — Production Readiness
 
-- [ ] Add authentication
-- [ ] Add logging
-- [ ] Add monitoring
-- [ ] Add Docker support
-- [ ] Add CI/CD
-- [ ] Improve error handling
+- [ ] Add authentication and API key management
+- [ ] Add structured logging with correlation IDs
+- [ ] Add health monitoring and metrics
+- [ ] Add Docker support with multi-stage builds
+- [ ] Set up CI/CD pipeline (GitHub Actions)
+- [ ] Improve error handling with problem details (RFC 7807)
 
-### Phase 4 — Intelligence
+### Phase 4 — Business Intelligence
 
-- [ ] Customer risk scoring
-- [ ] Activity summarization
-- [ ] Opportunity analysis
-- [ ] Recommended next actions
-- [ ] Management dashboards
+- [ ] Customer risk scoring based on activity patterns
+- [ ] Automated activity summarization
+- [ ] Opportunity win/loss analysis
+- [ ] Recommended next actions engine
+- [ ] Management dashboard API endpoints
 
-## Why This Project?
+## Motivation
 
-I have spent more than 20 years building software systems, including enterprise applications, mobile applications, SaaS products and business systems.
+This project exists at the intersection of two areas where I have deep experience: **enterprise business systems** and **practical AI integration**.
 
-Over the years, I have seen technology change significantly.
+Over 20 years of building software — enterprise applications, SaaS platforms, mobile applications, and business systems — one pattern has remained consistent: organizations collect far more data than they effectively use. The tools for storing and querying data have matured significantly, but the gap between raw data and informed decision-making has not closed at the same pace.
 
-The interesting part is that many business problems have not changed nearly as much.
+AI changes this equation. Not by replacing human judgment, but by processing operational data at a scale and speed that manual review cannot match, and surfacing the patterns that matter.
 
-Companies still need to understand their customers, prioritize opportunities and help their teams decide what to do next.
+This project is a concrete implementation of that idea: a clean, extensible pipeline that takes structured business data and returns actionable intelligence. It reflects the architectural thinking and engineering discipline that come from building production systems across multiple industries, combined with a deliberate focus on making AI practically useful rather than theoretically impressive.
 
-This project is an exploration of how AI can become part of those workflows in a practical way.
+## Contributing
 
-## Status
+Contributions are welcome. If you would like to contribute:
 
-This project is under active development.
+1. **Open an issue** to discuss the change before starting work
+2. **Fork the repository** and create a feature branch
+3. **Follow existing patterns** — the codebase favors clarity over cleverness
+4. **Submit a pull request** with a clear description of what changed and why
 
-The repository will evolve as new components, experiments and ideas are added.
+For bugs, please include steps to reproduce. For feature requests, describe the use case and expected behavior.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](LICENSE).
+
+Copyright (c) 2026 İbrahim Kılıç
