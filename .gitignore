@@ -15,6 +15,10 @@ appsettings.Local.json
 *.swp
 *~
 
+## Markdown (README.md hariç)
+*.md
+!README.md
+
 ## OS
 .DS_Store
 Thumbs.db
