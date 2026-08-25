@@ -496,15 +496,12 @@ The project includes a reproducible evaluation framework covering:
 - output validity (structured output validation via AiResponseValidator)
 - business-intelligence quality (synthetic datasets for all 5 analysis types)
 - regression behaviour (AI regression tests and prompt injection tests)
+- latency and cost measurement (AiCallMetrics + MeteredAiService decorator)
+- benchmark harness for reproducible experiments (evaluation dataset runner with timing)
+- AI-vs-deterministic-baseline comparisons (DeterministicBaselineService)
+- adversarial prompt evaluation (13 tests covering 10 attack vectors)
 
-Planned but not yet implemented:
-
-- latency and cost measurement
-- benchmark harness for reproducible experiments
-- AI-vs-deterministic-baseline comparisons
-- adversarial prompt evaluation
-
-No benchmark number will be published until it is produced by a reproducible experiment.
+Benchmark results are published in [docs/BENCHMARK_RESULTS.md](docs/BENCHMARK_RESULTS.md).
 
 See [EVALUATION.md](EVALUATION.md).
 
@@ -588,25 +585,24 @@ See [SECURITY.md](SECURITY.md).
 - [x] Changelog (CHANGELOG.md)
 - [x] Release/versioning policy (RELEASE.md)
 - [x] Good-first-issue list (5 issues on GitHub)
-- [x] Community examples (examples/api-examples.sh)
-- [ ] Good-first-issue list
-- [ ] Release/versioning policy
-- [ ] Public demo
-- [ ] Community examples
+- [x] Community examples (examples/api-examples.sh, examples/python-client.py)
+- [x] Public demo (Swagger UI + Docker Compose)
 
 ## Phase 7 — External Impact — Goal
 
-- [ ] External users and contributors
-- [ ] GitHub stars/forks growth
+- [x] GitHub repository optimized (description, topics, Discussions enabled)
+- [x] Python integration example (examples/python-client.py)
+- [ ] External users and contributors (organic growth)
+- [ ] GitHub stars/forks growth (organic growth)
 - [ ] Technical articles
 - [ ] Independent references and adoption evidence
 
-## Phase 8 — Research & Publication
+## Phase 8 — Research & Publication — Complete
 
-- [ ] AI-native engineering case study
-- [ ] Benchmark publication
-- [ ] Cost/quality/latency analysis
-- [ ] Lessons learned
+- [x] AI-native engineering case study (docs/CASE_STUDY.md)
+- [x] Benchmark publication (docs/BENCHMARK_RESULTS.md)
+- [x] Cost/quality/latency analysis (docs/COST_QUALITY_LATENCY.md)
+- [x] Lessons learned (docs/LESSONS_LEARNED.md)
 
 ---
 
