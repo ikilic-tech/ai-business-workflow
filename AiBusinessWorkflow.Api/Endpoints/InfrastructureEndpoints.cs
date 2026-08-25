@@ -13,9 +13,9 @@ public static class InfrastructureEndpoints
             ResponseWriter = HealthCheckResponseWriter.WriteAsync
         });
 
-        app.MapGet("/api/ai/test", async (IAiService aiService) =>
+        app.MapGet("/api/ai/test", async (IAiService aiService, CancellationToken cancellationToken) =>
         {
-            var result = await aiService.TestAiAsync();
+            var result = await aiService.TestAiAsync(cancellationToken);
             return Results.Ok(new { status = "success", response = result });
         });
 

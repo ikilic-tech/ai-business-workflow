@@ -25,7 +25,7 @@ public class AiHealthCheck : IHealthCheck
     {
         try
         {
-            var response = await _aiService.TestAiAsync();
+            var response = await _aiService.TestAiAsync(cancellationToken);
 
             var data = new Dictionary<string, object>
             {

@@ -23,13 +23,13 @@ public class AiService : IAiService
         _logger = logger;
     }
 
-    public async Task<string> TestAiAsync()
+    public async Task<string> TestAiAsync(CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Testing AI connection with model {Model}", _model);
 
         try
         {
-            var response = await _responsesClient.CreateResponseAsync(_model, "Say hello in one sentence.");
+            var response = await _responsesClient.CreateResponseAsync(_model, "Say hello in one sentence.", null, cancellationToken);
             var result = response.Value.GetOutputText();
 
             _logger.LogInformation("AI test successful");
@@ -42,14 +42,14 @@ public class AiService : IAiService
         }
     }
 
-    public async Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process)
+    public async Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Analyzing business process {ProcessId}: {ProcessName}", process.Id, process.Name);
 
         try
         {
             var prompt = BusinessWorkflowPrompt.Build(process);
-            var response = await _responsesClient.CreateResponseAsync(_model, prompt);
+            var response = await _responsesClient.CreateResponseAsync(_model, prompt, null, cancellationToken);
             var rawText = response.Value.GetOutputText();
 
             _logger.LogInformation("Business process analysis completed for {ProcessId}", process.Id);
@@ -63,14 +63,14 @@ public class AiService : IAiService
         }
     }
 
-    public async Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer)
+    public async Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Assessing customer risk for {CustomerId}: {CompanyName}", customer.CustomerId, customer.CompanyName);
 
         try
         {
             var prompt = CustomerRiskPrompt.Build(customer);
-            var response = await _responsesClient.CreateResponseAsync(_model, prompt);
+            var response = await _responsesClient.CreateResponseAsync(_model, prompt, null, cancellationToken);
             var rawText = response.Value.GetOutputText();
 
             _logger.LogInformation("Customer risk assessment completed for {CustomerId}", customer.CustomerId);
@@ -84,14 +84,14 @@ public class AiService : IAiService
         }
     }
 
-    public async Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request)
+    public async Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Summarizing activities for {Department}, period {Period}", request.Department, request.Period);
 
         try
         {
             var prompt = ActivitySummaryPrompt.Build(request);
-            var response = await _responsesClient.CreateResponseAsync(_model, prompt);
+            var response = await _responsesClient.CreateResponseAsync(_model, prompt, null, cancellationToken);
             var rawText = response.Value.GetOutputText();
 
             _logger.LogInformation("Activity summary completed for {Department}", request.Department);
@@ -105,14 +105,14 @@ public class AiService : IAiService
         }
     }
 
-    public async Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity)
+    public async Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Analyzing opportunity {OpportunityId}: {AccountName}", opportunity.OpportunityId, opportunity.AccountName);
 
         try
         {
             var prompt = OpportunityAnalysisPrompt.Build(opportunity);
-            var response = await _responsesClient.CreateResponseAsync(_model, prompt);
+            var response = await _responsesClient.CreateResponseAsync(_model, prompt, null, cancellationToken);
             var rawText = response.Value.GetOutputText();
 
             _logger.LogInformation("Opportunity analysis completed for {OpportunityId}", opportunity.OpportunityId);
@@ -126,14 +126,14 @@ public class AiService : IAiService
         }
     }
 
-    public async Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request)
+    public async Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Generating recommended actions for {BusinessArea}", request.BusinessArea);
 
         try
         {
             var prompt = RecommendedActionsPrompt.Build(request);
-            var response = await _responsesClient.CreateResponseAsync(_model, prompt);
+            var response = await _responsesClient.CreateResponseAsync(_model, prompt, null, cancellationToken);
             var rawText = response.Value.GetOutputText();
 
             _logger.LogInformation("Recommended actions generated for {BusinessArea}", request.BusinessArea);

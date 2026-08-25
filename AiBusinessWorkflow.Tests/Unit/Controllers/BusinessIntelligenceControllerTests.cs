@@ -127,10 +127,10 @@ public class BusinessIntelligenceControllerTests
     {
         var customer = CreateValidCustomer();
         var assessment = CreateSampleRiskAssessment();
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(assessment);
 
-        var result = await _controller.AssessCustomerRisk(customer);
+        var result = await _controller.AssessCustomerRisk(customer, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var returned = okResult.Value.Should().BeOfType<CustomerRiskAssessment>().Subject;
@@ -141,10 +141,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task AssessCustomerRisk_WhenServiceThrows_ShouldPropagateException()
     {
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var act = () => _controller.AssessCustomerRisk(CreateValidCustomer());
+        var act = () => _controller.AssessCustomerRisk(CreateValidCustomer(), CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>().WithMessage("AI service failed");
     }
@@ -152,10 +152,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task AssessCustomerRisk_ShouldReturnCorrectType()
     {
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleRiskAssessment());
 
-        var result = await _controller.AssessCustomerRisk(CreateValidCustomer());
+        var result = await _controller.AssessCustomerRisk(CreateValidCustomer(), CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<CustomerRiskAssessment>>();
     }
@@ -167,10 +167,10 @@ public class BusinessIntelligenceControllerTests
     {
         var request = CreateValidActivityRequest();
         var report = CreateSampleActivityReport();
-        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>()))
+        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(report);
 
-        var result = await _controller.SummarizeActivities(request);
+        var result = await _controller.SummarizeActivities(request, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var returned = okResult.Value.Should().BeOfType<ActivitySummaryReport>().Subject;
@@ -181,10 +181,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task SummarizeActivities_WhenServiceThrows_ShouldPropagateException()
     {
-        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>()))
+        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var act = () => _controller.SummarizeActivities(CreateValidActivityRequest());
+        var act = () => _controller.SummarizeActivities(CreateValidActivityRequest(), CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -192,10 +192,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task SummarizeActivities_ShouldReturnCorrectType()
     {
-        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>()))
+        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleActivityReport());
 
-        var result = await _controller.SummarizeActivities(CreateValidActivityRequest());
+        var result = await _controller.SummarizeActivities(CreateValidActivityRequest(), CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<ActivitySummaryReport>>();
     }
@@ -207,10 +207,10 @@ public class BusinessIntelligenceControllerTests
     {
         var opportunity = CreateValidOpportunity();
         var analysis = CreateSampleOpportunityResult();
-        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>()))
+        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(analysis);
 
-        var result = await _controller.AnalyzeOpportunity(opportunity);
+        var result = await _controller.AnalyzeOpportunity(opportunity, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var returned = okResult.Value.Should().BeOfType<OpportunityAnalysisResult>().Subject;
@@ -221,10 +221,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task AnalyzeOpportunity_WhenServiceThrows_ShouldPropagateException()
     {
-        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>()))
+        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var act = () => _controller.AnalyzeOpportunity(CreateValidOpportunity());
+        var act = () => _controller.AnalyzeOpportunity(CreateValidOpportunity(), CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -232,10 +232,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task AnalyzeOpportunity_ShouldReturnCorrectType()
     {
-        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>()))
+        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleOpportunityResult());
 
-        var result = await _controller.AnalyzeOpportunity(CreateValidOpportunity());
+        var result = await _controller.AnalyzeOpportunity(CreateValidOpportunity(), CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<OpportunityAnalysisResult>>();
     }
@@ -247,10 +247,10 @@ public class BusinessIntelligenceControllerTests
     {
         var request = CreateValidActionsRequest();
         var report = CreateSampleActionsReport();
-        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>()))
+        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(report);
 
-        var result = await _controller.GenerateRecommendedActions(request);
+        var result = await _controller.GenerateRecommendedActions(request, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var returned = okResult.Value.Should().BeOfType<RecommendedActionsReport>().Subject;
@@ -261,10 +261,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task GenerateRecommendedActions_WhenServiceThrows_ShouldPropagateException()
     {
-        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>()))
+        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var act = () => _controller.GenerateRecommendedActions(CreateValidActionsRequest());
+        var act = () => _controller.GenerateRecommendedActions(CreateValidActionsRequest(), CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -272,10 +272,10 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task GenerateRecommendedActions_ShouldReturnCorrectType()
     {
-        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>()))
+        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleActionsReport());
 
-        var result = await _controller.GenerateRecommendedActions(CreateValidActionsRequest());
+        var result = await _controller.GenerateRecommendedActions(CreateValidActionsRequest(), CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<RecommendedActionsReport>>();
     }
@@ -285,13 +285,13 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task Dashboard_WithAllInputs_ShouldReturnOkWithAllResults()
     {
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleRiskAssessment());
-        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>()))
+        _mockAiService.Setup(s => s.SummarizeActivitiesAsync(It.IsAny<ActivitySummaryRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleActivityReport());
-        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>()))
+        _mockAiService.Setup(s => s.AnalyzeOpportunityAsync(It.IsAny<Opportunity>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleOpportunityResult());
-        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>()))
+        _mockAiService.Setup(s => s.GenerateRecommendedActionsAsync(It.IsAny<RecommendedActionsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleActionsReport());
 
         var request = new DashboardRequest
@@ -302,7 +302,7 @@ public class BusinessIntelligenceControllerTests
             ActionsContext = CreateValidActionsRequest()
         };
 
-        var result = await _controller.GenerateDashboard(request);
+        var result = await _controller.GenerateDashboard(request, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var dashboard = okResult.Value.Should().BeOfType<DashboardSummary>().Subject;
@@ -318,7 +318,7 @@ public class BusinessIntelligenceControllerTests
     {
         var request = new DashboardRequest();
 
-        var result = await _controller.GenerateDashboard(request);
+        var result = await _controller.GenerateDashboard(request, CancellationToken.None);
 
         result.Result.Should().BeOfType<BadRequestObjectResult>();
     }
@@ -326,12 +326,12 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task Dashboard_ShouldReturnCorrectType()
     {
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleRiskAssessment());
 
         var request = new DashboardRequest { Customer = CreateValidCustomer() };
 
-        var result = await _controller.GenerateDashboard(request);
+        var result = await _controller.GenerateDashboard(request, CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<DashboardSummary>>();
     }
@@ -339,7 +339,7 @@ public class BusinessIntelligenceControllerTests
     [Fact]
     public async Task Dashboard_WithPartialInputs_ShouldReturnOnlyRequestedResults()
     {
-        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>()))
+        _mockAiService.Setup(s => s.AssessCustomerRiskAsync(It.IsAny<CustomerProfile>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreateSampleRiskAssessment());
 
         var request = new DashboardRequest
@@ -347,7 +347,7 @@ public class BusinessIntelligenceControllerTests
             Customer = CreateValidCustomer()
         };
 
-        var result = await _controller.GenerateDashboard(request);
+        var result = await _controller.GenerateDashboard(request, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var dashboard = okResult.Value.Should().BeOfType<DashboardSummary>().Subject;

@@ -5,7 +5,7 @@ namespace AiBusinessWorkflow.Tests.Integration.Helpers;
 
 public class FakeAiService : IAiService
 {
-    public Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process)
+    public Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process, CancellationToken cancellationToken = default)
     {
         var analysis = new BusinessProcessAnalysis
         {
@@ -55,12 +55,12 @@ public class FakeAiService : IAiService
         return Task.FromResult(analysis);
     }
 
-    public Task<string> TestAiAsync()
+    public Task<string> TestAiAsync(CancellationToken cancellationToken = default)
     {
         return Task.FromResult("Hello from fake AI service!");
     }
 
-    public Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer)
+    public Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer, CancellationToken cancellationToken = default)
     {
         var result = new CustomerRiskAssessment
         {
@@ -86,7 +86,7 @@ public class FakeAiService : IAiService
         return Task.FromResult(result);
     }
 
-    public Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request)
+    public Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request, CancellationToken cancellationToken = default)
     {
         var result = new ActivitySummaryReport
         {
@@ -108,7 +108,7 @@ public class FakeAiService : IAiService
         return Task.FromResult(result);
     }
 
-    public Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity)
+    public Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
     {
         var result = new OpportunityAnalysisResult
         {
@@ -129,7 +129,7 @@ public class FakeAiService : IAiService
         return Task.FromResult(result);
     }
 
-    public Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request)
+    public Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request, CancellationToken cancellationToken = default)
     {
         var result = new RecommendedActionsReport
         {

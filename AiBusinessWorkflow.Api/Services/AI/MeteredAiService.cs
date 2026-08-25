@@ -14,34 +14,34 @@ public sealed class MeteredAiService : IAiService
         _metrics = metrics;
     }
 
-    public async Task<string> TestAiAsync()
+    public async Task<string> TestAiAsync(CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("test-ai", () => _inner.TestAiAsync());
+        return await MeasureAsync("test-ai", () => _inner.TestAiAsync(cancellationToken));
     }
 
-    public async Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process)
+    public async Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process, CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("business-workflow", () => _inner.AnalyzeBusinessProcessAsync(process));
+        return await MeasureAsync("business-workflow", () => _inner.AnalyzeBusinessProcessAsync(process, cancellationToken));
     }
 
-    public async Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer)
+    public async Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer, CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("customer-risk", () => _inner.AssessCustomerRiskAsync(customer));
+        return await MeasureAsync("customer-risk", () => _inner.AssessCustomerRiskAsync(customer, cancellationToken));
     }
 
-    public async Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request)
+    public async Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request, CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("activity-summary", () => _inner.SummarizeActivitiesAsync(request));
+        return await MeasureAsync("activity-summary", () => _inner.SummarizeActivitiesAsync(request, cancellationToken));
     }
 
-    public async Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity)
+    public async Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("opportunity-analysis", () => _inner.AnalyzeOpportunityAsync(opportunity));
+        return await MeasureAsync("opportunity-analysis", () => _inner.AnalyzeOpportunityAsync(opportunity, cancellationToken));
     }
 
-    public async Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request)
+    public async Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request, CancellationToken cancellationToken = default)
     {
-        return await MeasureAsync("recommended-actions", () => _inner.GenerateRecommendedActionsAsync(request));
+        return await MeasureAsync("recommended-actions", () => _inner.GenerateRecommendedActionsAsync(request, cancellationToken));
     }
 
     private async Task<T> MeasureAsync<T>(string operation, Func<Task<T>> action)
