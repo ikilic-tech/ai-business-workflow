@@ -47,10 +47,10 @@ This roadmap separates what already exists from what is planned.
 - [x] Add AI regression tests (6 prompt injection regression tests)
 - [x] Build evaluation dataset (synthetic datasets for all 5 analysis types)
 - [x] Add structured output validation (AiResponseValidator)
-- [ ] Build benchmark harness
-- [ ] Measure latency/cost/reliability
-- [ ] Compare AI against deterministic baseline
-- [ ] Add adversarial prompt evaluation
+- [x] Build benchmark harness (evaluation dataset runner with timing + validation)
+- [x] Add adversarial prompt evaluation (13 tests, 10 attack scenarios, tag injection fix)
+- [ ] Measure latency/cost/reliability (requires live AI provider)
+- [ ] Compare AI against deterministic baseline (requires live AI provider)
 
 ## Phase 6 — Open Source Maturity — Partially Implemented
 
@@ -59,8 +59,8 @@ This roadmap separates what already exists from what is planned.
 - [x] Issue templates (bug report, feature request, security)
 - [x] Pull-request template
 - [x] Security policy (SECURITY.md)
-- [ ] Good-first-issue list
-- [ ] Release/versioning policy
+- [ ] Good-first-issue list (requires GitHub label setup)
+- [x] Release/versioning policy (RELEASE.md)
 - [x] Changelog (CHANGELOG.md)
 - [ ] Public demo
 - [ ] Community examples

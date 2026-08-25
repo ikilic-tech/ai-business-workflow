@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file.
 
 ## Phase 5 — AI-Native Engineering — Implemented
 
+### Adversarial Prompt Evaluation
+
+- Fixed InputSanitizer to block `</user_data>` and `<user_data>` tag injection (data boundary escape)
+- Added 13 adversarial prompt evaluation tests covering XML boundary escape, instruction override, role-playing, system prompt extraction, JSON payload injection, delimiter confusion, combined multi-vector attacks
+- Created adversarial evaluation dataset with 10 attack scenarios (evaluation/datasets/adversarial.json)
+
+### Benchmark Harness
+
+- Created evaluation dataset validation tests (structure, required fields, unique IDs, score ranges)
+- Created benchmark harness running all 5 analysis types through API endpoints with timing measurement
+- Harness validates response structure, scores, and required fields
+- Designed for extension to live AI provider testing
+
+### Release Policy
+
+- Created RELEASE.md with semantic versioning, release process, prompt versioning table
+
 ### Documentation
 
 - Moved all project documentation to repository root (AI_NATIVE.md, ARCHITECTURE.md, SECURITY.md, EVALUATION.md, ROADMAP.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, AI_EVIDENCE.md, IMPACT.md)
