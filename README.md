@@ -1,103 +1,20 @@
 # AI Business Workflow
 
-A .NET 8 Web API that uses AI to analyze business data and produce structured intelligence: customer risk scoring, opportunity analysis, activity summarization, workflow optimization, and recommended actions.
-
-The project also explores an AI-native engineering approach where AI participates in planning, implementation, testing, security review, and documentation — while humans retain responsibility for architecture, verification, and decisions.
-
-## Overview
-
-Most business applications collect operational data — customer records, sales activities, visit notes, opportunities — but often fail to convert this data into timely, actionable decisions.
-
-This API takes structured business data, runs it through an AI analysis layer, and returns typed intelligence that can inform human decisions.
+A .NET 8 Web API that takes structured business data (customers, activities, opportunities, processes), sends it through an AI analysis layer, and returns typed, validated intelligence — not free-form text.
 
 ```
-Business Data → Validation → AI Analysis → Structured Output → Validation → Response
+POST /api/intelligence/customer-risk
+{
+  "companyName": "Acme Industries",
+  "industry": "Manufacturing",
+  "paymentHistory": "Generally on time, one late payment last quarter",
+  "activities": [...]
+}
+
+→ { "riskScore": 35, "riskLevel": "Low", "churnProbability": "Low", "riskFactors": [...] }
 ```
 
-## Architecture
-
-```
-Client
-  │
-  ▼
-ASP.NET Core (Middleware: Correlation ID, Auth, Error Handling)
-  │
-  ├── Controllers / Minimal API Endpoints
-  │
-  ▼
-IAiService (interface)
-  │
-  ├── AiService (OpenAI Responses API)
-  ├── MeteredAiService (timing decorator)
-  ├── DeterministicBaselineService (rule-based comparison)
-  └── FakeAiService (deterministic testing)
-  │
-  ▼
-Structured Output Models → AiResponseValidator → Response
-```
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) and [docs/adr/](docs/adr/) for architecture decision records.
-
-## AI Integration
-
-The AI layer is designed around provider independence and output safety:
-
-- **Provider abstraction** — `IAiService` interface decouples business logic from OpenAI. Switching providers requires only a new implementation.
-- **Structured output** — All AI responses are deserialized into typed C# models, not free-form text.
-- **Output validation** — `AiResponseValidator` clamps scores to valid ranges, normalizes enum values, and initializes null collections.
-- **Prompt injection protection** — `InputSanitizer` breaks dangerous patterns (`{{`, `}}`, code fences, boundary tags). All user data is enclosed in `<user_data>` boundary tags.
-- **Metrics** — `MeteredAiService` decorator tracks call count, latency (avg/p95/min/max), and success rate per operation via `AiCallMetrics`.
-- **Deterministic baseline** — `DeterministicBaselineService` provides rule-based analysis for quality comparison against AI output.
-- **Versioned prompts** — All prompt templates are extracted into versioned classes in `Prompts/` with documented purpose and expected I/O.
-
-## Business Intelligence
-
-| Endpoint | Description |
-|---|---|
-| `POST /api/business-workflow/analyze` | Process efficiency, bottlenecks, recommendations, automation opportunities |
-| `POST /api/intelligence/customer-risk` | Churn risk score, risk factors, engagement trend |
-| `POST /api/intelligence/activity-summary` | Activity volume, trends, categories, key findings |
-| `POST /api/intelligence/opportunity-analysis` | Win probability, strengths/weaknesses, competitive position |
-| `POST /api/intelligence/recommended-actions` | Prioritized actions with impact/effort ratings |
-| `POST /api/intelligence/dashboard` | Runs multiple analyses in parallel, returns combined result |
-
-## Evaluation
-
-The project includes an evaluation framework for measuring AI output quality:
-
-- **Synthetic datasets** — 9 scenarios across 5 analysis types with expected behaviour criteria (score ranges, required fields, enum values)
-- **Adversarial tests** — 13 tests covering 10 attack vectors (XML boundary escape, instruction override, role-playing, JSON injection, multi-vector attacks)
-- **Benchmark harness** — Runs evaluation datasets through the API with timing measurement and structural validation
-- **Deterministic baseline** — Rule-based comparison service using keyword heuristics
-- **Latency tracking** — Per-operation metrics accessible at `GET /api/ai/metrics`
-
-Current benchmarks run against `FakeAiService` (deterministic) to validate the pipeline. Live AI benchmarks are planned.
-
-See [EVALUATION.md](EVALUATION.md) and [docs/BENCHMARK_RESULTS.md](docs/BENCHMARK_RESULTS.md).
-
-## Security
-
-- Prompt injection protection (InputSanitizer + `<user_data>` boundary tags)
-- Collection size limits and request body size cap (5 MB)
-- Timing-safe API key comparison
-- API key enforcement in non-Development environments
-- Security response headers (X-Content-Type-Options, X-Frame-Options, CSP, HSTS)
-- Dashboard timeout handling
-- Correlation ID validation
-- Dependency vulnerability scanning and secret detection in CI
-- Adversarial prompt evaluation test suite
-
-See [SECURITY.md](SECURITY.md).
-
-## Getting Started
-
-### Prerequisites
-
-- .NET 8 SDK
-- OpenAI API key (for live AI; not required for running tests)
-- Docker (optional)
-
-### Install and Run
+## Quick Start
 
 ```bash
 git clone https://github.com/ikilic-tech/ai-business-workflow.git
@@ -107,9 +24,16 @@ cd AiBusinessWorkflow.Api
 dotnet run
 ```
 
-Swagger UI: `http://localhost:5221/swagger`
+Open `http://localhost:5221/swagger` to explore the API.
 
-### Configuration
+Tests require no API key or network access:
+
+```bash
+cd ai-business-workflow
+dotnet test
+```
+
+### Connecting an AI Provider
 
 Create `AiBusinessWorkflow.Api/appsettings.Local.json`:
 
@@ -126,7 +50,7 @@ Create `AiBusinessWorkflow.Api/appsettings.Local.json`:
 }
 ```
 
-Do not commit API keys. In Development mode, authentication is skipped when no keys are configured.
+**Do not commit API keys.** `appsettings.Local.json` is in `.gitignore`. In Development mode, authentication is skipped when no keys are configured.
 
 ### Docker
 
@@ -134,19 +58,195 @@ Do not commit API keys. In Development mode, authentication is skipped when no k
 AI_API_KEY=sk-your-key docker compose up --build
 ```
 
-### Tests
+## What This Does
+
+Most business applications collect customer records, sales activities, visit notes, and opportunities — but rarely convert that data into timely decisions.
+
+This API accepts structured business data, runs it through an AI analysis layer with input sanitization and output validation, and returns typed C# models that can be consumed by any client.
+
+**This is not a chatbot.** There is no conversation, no free-form text generation, no prompt exposed to the user. The API receives structured data, constructs a prompt internally, sends it to OpenAI, deserializes the response into typed models, validates the output (clamping scores, normalizing enums, initializing nulls), and returns a structured JSON response.
+
+```
+Client sends business data (JSON)
+       │
+       ▼
+  Input validation (DataAnnotations)
+       │
+       ▼
+  InputSanitizer (breaks injection patterns)
+       │
+       ▼
+  Versioned prompt template + <user_data> boundary tags
+       │
+       ▼
+  OpenAI Responses API
+       │
+       ▼
+  Deserialize into typed C# model
+       │
+       ▼
+  AiResponseValidator (clamp scores 0-100, normalize enums, init nulls)
+       │
+       ▼
+  Structured JSON response
+```
+
+## Example: Customer Risk Assessment
+
+**Request:**
+
+```bash
+curl -X POST http://localhost:5221/api/intelligence/customer-risk \
+  -H "Content-Type: application/json" \
+  -H "X-Api-Key: your-key" \
+  -d '{
+    "companyName": "Acme Industries",
+    "industry": "Manufacturing",
+    "employeeCount": 250,
+    "annualRevenue": 15000000,
+    "contactName": "Jane Smith",
+    "contactEmail": "jane@acme.example.com",
+    "accountAge": "3 years",
+    "paymentHistory": "Generally on time, one late payment last quarter",
+    "activities": [
+      {
+        "type": "Meeting",
+        "date": "2024-01-15",
+        "description": "Quarterly business review",
+        "outcome": "Discussed expansion plans"
+      },
+      {
+        "type": "Call",
+        "date": "2024-02-20",
+        "description": "Follow-up on new pricing",
+        "outcome": "Requested proposal"
+      }
+    ]
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "customerId": "...",
+  "companyName": "Acme Industries",
+  "riskScore": 35,
+  "riskLevel": "Low",
+  "churnProbability": "Low",
+  "engagementTrend": "Stable",
+  "riskFactors": [
+    {
+      "factor": "Payment Consistency",
+      "severity": "Low",
+      "description": "Payments are generally on time",
+      "impact": "Minimal risk"
+    }
+  ],
+  "recommendedActions": ["Continue regular check-ins"],
+  "summary": "Low-risk customer with stable engagement..."
+}
+```
+
+Every field is typed. `riskScore` is always 0-100 (clamped by `AiResponseValidator`). `riskLevel` is always a valid enum value. Collections are never null.
+
+See `examples/api-examples.sh` for curl examples covering all endpoints.
+
+## Analysis Types
+
+| Endpoint | Input | Output |
+|---|---|---|
+| `POST /api/intelligence/customer-risk` | Customer profile + activities | Risk score (0-100), churn probability, risk factors |
+| `POST /api/intelligence/opportunity-analysis` | Deal details + competitor info | Win probability (0-100), strengths, weaknesses, strategy |
+| `POST /api/intelligence/activity-summary` | Department activities over a period | Volume, trends, categories, key findings |
+| `POST /api/intelligence/recommended-actions` | Business area + challenges + goals | Prioritized actions with impact/effort ratings |
+| `POST /api/business-workflow/analyze` | Process description + goal | Efficiency score, bottlenecks, automation opportunities |
+| `POST /api/intelligence/dashboard` | Combined request | Runs multiple analyses in parallel (60s timeout) |
+
+## Architecture
+
+```
+Client
+  │
+  ▼
+ASP.NET Core Middleware (Correlation ID → Auth → Error Handling)
+  │
+  ├── Controllers (business intelligence endpoints)
+  ├── Minimal API Endpoints (health, metrics, samples)
+  │
+  ▼
+IAiService interface
+  │
+  ├── AiService              → OpenAI Responses API (production)
+  ├── MeteredAiService       → Timing decorator (latency, success rate)
+  ├── DeterministicBaseline  → Rule-based keyword heuristics (comparison)
+  └── FakeAiService          → Deterministic responses (testing)
+  │
+  ▼
+AiResponseValidator → Typed response models → Client
+```
+
+The `IAiService` interface decouples all business logic from OpenAI. Switching providers (Azure OpenAI, Anthropic, local models) requires implementing one interface with five methods. No business logic changes.
+
+`MeteredAiService` is a decorator that wraps any `IAiService` implementation and tracks per-operation call count, latency (avg/p95/min/max), and success rate via `AiCallMetrics`. Metrics are accessible at `GET /api/ai/metrics`.
+
+All prompt templates are versioned classes in `Prompts/` (currently v1.0.0) with documented purpose, expected input, and expected output.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for details and [docs/adr/](docs/adr/) for architecture decision records.
+
+## Security
+
+**Input protection:**
+- `InputSanitizer` breaks `{{`, `}}`, code fences, and `<user_data>`/`</user_data>` tag injection attempts
+- All user data is enclosed in `<user_data>` boundary tags in prompts, separating data from instructions
+- Request body size capped at 5 MB (Kestrel)
+- Collection size limits enforced via `[MaxLength]` attributes
+
+**Authentication and transport:**
+- API key authentication via `X-Api-Key` header (enforced in non-Development environments)
+- Timing-safe key comparison (`CryptographicOperations.FixedTimeEquals`)
+- Security response headers: `X-Content-Type-Options`, `X-Frame-Options`, CSP, HSTS
+
+**AI output validation:**
+- `AiResponseValidator` clamps all scores to 0-100
+- Invalid enum values normalized to defaults
+- Null collections initialized to empty lists
+
+**CI security:**
+- Dependency vulnerability scanning (`dotnet list package --vulnerable`)
+- Secret detection in CI pipeline
+
+**Adversarial testing:**
+- 13 adversarial tests covering 10 attack vectors: XML boundary escape, instruction override, role-playing, system prompt extraction, JSON payload injection, delimiter confusion, multi-vector attacks
+
+See [SECURITY.md](SECURITY.md) for full documentation.
+
+## Testing
+
+271 tests. All pass without API keys or network access.
 
 ```bash
 dotnet test
 ```
 
-Tests use `FakeAiService` and require no API keys or network access.
+| Category | Coverage |
+|---|---|
+| Model validation | DataAnnotations, required fields, value ranges |
+| Service unit tests | AI response parsing, validation, sanitization |
+| Controller tests | Request handling, error responses, edge cases |
+| Integration tests | Full HTTP pipeline with `FakeAiService` |
+| Adversarial tests | Prompt injection defense (13 tests, 10 vectors) |
+| Evaluation tests | Dataset validation + benchmark harness |
+| Metrics tests | `AiCallMetrics` tracking accuracy |
+| Baseline tests | `DeterministicBaselineService` correctness |
 
-## API Endpoints
+Integration tests use `FakeAiService` — a deterministic `IAiService` implementation that returns fixed responses, so tests are fast, repeatable, and require no external dependencies.
+
+## API Reference
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/api/health` | No | Application health + AI connectivity |
+| GET | `/api/health` | No | Health check + AI connectivity |
 | GET | `/api/ai/test` | Yes | Test AI provider connection |
 | GET | `/api/ai/metrics` | Yes | Per-operation latency and success metrics |
 | POST | `/api/ai/metrics/reset` | Yes | Reset metrics counters |
@@ -158,54 +258,39 @@ Tests use `FakeAiService` and require no API keys or network access.
 | POST | `/api/intelligence/dashboard` | Yes | Combined dashboard (parallel) |
 | GET | `/api/samples/*` | No | Synthetic sample data |
 
-Authentication uses `X-Api-Key` header. Errors follow RFC 7807 ProblemDetails.
+Authentication: `X-Api-Key` header. Errors: RFC 7807 ProblemDetails.
 
 ## Project Structure
 
 ```
 AiBusinessWorkflow.Api/
 ├── Controllers/          # Business intelligence endpoints
-├── Endpoints/            # Infrastructure + sample data (minimal API)
+├── Endpoints/            # Health, metrics, samples (minimal API)
 ├── HealthChecks/         # AI connectivity + memory checks
 ├── Middleware/            # Correlation ID, auth, error handling
-├── Models/               # Request/response types
+├── Models/               # Request/response types with DataAnnotations
 ├── Prompts/              # Versioned prompt templates (v1.0.0)
-├── Services/AI/          # IAiService, AiService, MeteredAiService,
-│                         # DeterministicBaselineService, InputSanitizer,
+├── Services/AI/          # IAiService implementations, InputSanitizer,
 │                         # AiResponseValidator, AiCallMetrics
 └── Data/                 # Sample data generators
 
 AiBusinessWorkflow.Tests/
-├── Unit/                 # Model validation, service, controller tests
-├── Integration/          # Full HTTP pipeline tests (FakeAiService)
+├── Unit/                 # Model, service, controller tests
+├── Integration/          # Full HTTP pipeline tests
 └── Evaluation/           # Dataset validation + benchmark harness
 
-evaluation/
-└── datasets/             # Synthetic evaluation scenarios (JSON)
-
-docs/
-├── adr/                  # Architecture Decision Records
-├── BENCHMARK_RESULTS.md
-├── CASE_STUDY.md
-├── COST_QUALITY_LATENCY.md
-└── LESSONS_LEARNED.md
-
-examples/
-├── api-examples.sh       # curl examples
-└── python-client.py      # Python integration example
+evaluation/datasets/      # Synthetic evaluation scenarios (JSON)
+docs/                     # ADRs, benchmarks, case study, lessons learned
+examples/                 # curl examples + Python client
 ```
 
 ## Engineering Approach
 
-This project was built using an AI-native engineering workflow with Claude Code:
+This project was built using an AI-native engineering workflow. AI participates in implementation, testing, security review, and documentation. Humans define objectives, make architectural decisions, review output, and approve changes.
 
-**Human responsibilities:** defining objectives, making architectural decisions, reviewing implementation, validating behaviour, approving changes.
+The distinction from "AI-assisted" development: AI is not just a code completion tool here. It participates across the full lifecycle — exploring alternatives, generating test cases, identifying security concerns, and proposing refactoring. But humans own every decision.
 
-**AI assistance:** exploring alternatives, generating implementation candidates, proposing tests, debugging, identifying refactoring opportunities, drafting documentation, security review.
-
-**Automation:** building, testing, evaluating, scanning, validating.
-
-See [AI_NATIVE.md](AI_NATIVE.md) for the full methodology.
+See [AI_NATIVE.md](AI_NATIVE.md) for the methodology.
 
 ## Limitations
 
@@ -218,7 +303,7 @@ See [AI_NATIVE.md](AI_NATIVE.md) for the full methodology.
 
 ## Future Work
 
-See [ROADMAP.md](ROADMAP.md) for planned improvements including additional AI providers, database persistence, caching, rate limiting, and live benchmarking.
+See [ROADMAP.md](ROADMAP.md) for planned improvements including additional AI providers, database persistence, caching, rate limiting, live benchmarking, and OpenTelemetry integration.
 
 ## Contributing
 
