@@ -14,7 +14,7 @@ public static class BusinessIntelligenceSampleData
             EmployeeCount = 450,
             AnnualRevenue = 85000000m,
             ContactName = "Sarah Chen",
-            ContactEmail = "sarah.chen@techflow.com",
+            ContactEmail = "sarah.chen@techflow.example.com",
             AccountAge = "4 years",
             PaymentHistory = "Consistently on time, no missed payments in 4 years. Upgraded plan twice. Average monthly spend increased 35% year over year.",
             Activities = new List<CustomerActivity>
@@ -34,7 +34,7 @@ public static class BusinessIntelligenceSampleData
             EmployeeCount = 180,
             AnnualRevenue = 32000000m,
             ContactName = "Michael Torres",
-            ContactEmail = "m.torres@globalretail.com",
+            ContactEmail = "m.torres@globalretail.example.com",
             AccountAge = "2 years",
             PaymentHistory = "Generally on time, 2 late payments in past year (15 and 22 days late). Maintained same plan level since signup.",
             Activities = new List<CustomerActivity>
@@ -53,7 +53,7 @@ public static class BusinessIntelligenceSampleData
             EmployeeCount = 95,
             AnnualRevenue = 18000000m,
             ContactName = "Lisa Park",
-            ContactEmail = "lisa.park@northstarlogistics.com",
+            ContactEmail = "lisa.park@northstarlogistics.example.com",
             AccountAge = "8 months",
             PaymentHistory = "3 late payments out of 8 invoices. Downgraded from Pro to Basic plan 2 months ago. Disputed one invoice.",
             Activities = new List<CustomerActivity>
