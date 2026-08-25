@@ -1,20 +1,20 @@
+using AiBusinessWorkflow.Api.Services.AI;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using OpenAI.Responses;
 
 namespace AiBusinessWorkflow.Api.HealthChecks;
 
 public class AiHealthCheck : IHealthCheck
 {
-    private readonly ResponsesClient _responsesClient;
+    private readonly IAiService _aiService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AiHealthCheck> _logger;
 
     public AiHealthCheck(
-        ResponsesClient responsesClient,
+        IAiService aiService,
         IConfiguration configuration,
         ILogger<AiHealthCheck> logger)
     {
-        _responsesClient = responsesClient;
+        _aiService = aiService;
         _configuration = configuration;
         _logger = logger;
     }
@@ -25,13 +25,12 @@ public class AiHealthCheck : IHealthCheck
     {
         try
         {
-            var model = _configuration["AI:Model"] ?? "gpt-4o";
-            var response = await _responsesClient.CreateResponseAsync(model, "Reply with OK");
+            var response = await _aiService.TestAiAsync();
 
             var data = new Dictionary<string, object>
             {
                 ["provider"] = _configuration["AI:Provider"] ?? "OpenAI",
-                ["model"] = model
+                ["model"] = _configuration["AI:Model"] ?? "gpt-4o"
             };
 
             return HealthCheckResult.Healthy("AI service is reachable.", data);
