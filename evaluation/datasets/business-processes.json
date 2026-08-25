@@ -1,0 +1,33 @@
+[
+  {
+    "id": "eval-bp-001",
+    "description": "Manual invoice processing with clear automation potential",
+    "input": {
+      "name": "Invoice Processing",
+      "description": "Invoices are received by email, manually entered into the accounting system, matched against purchase orders, approved by department managers, and scheduled for payment. The process involves 3 departments and takes an average of 8 business days.",
+      "inputData": "PDF invoices via email, purchase orders in ERP, approval chain through email, payment scheduling in accounting software. Monthly volume: 500 invoices.",
+      "goal": "Reduce processing time to under 3 business days and eliminate manual data entry errors."
+    },
+    "expectedBehaviour": {
+      "efficiencyScoreRange": [30, 70],
+      "bottlenecksMinCount": 1,
+      "recommendationsMinCount": 1,
+      "automationOpportunitiesMinCount": 1,
+      "requiredFields": ["processId", "processName", "efficiency", "bottlenecks", "recommendations", "summary"]
+    }
+  },
+  {
+    "id": "eval-bp-002",
+    "description": "Well-optimised customer onboarding",
+    "input": {
+      "name": "Digital Customer Onboarding",
+      "description": "Fully digital onboarding flow: customer fills online form, automated ID verification via API, instant account creation, welcome email with credentials, self-service configuration wizard. Average time: 15 minutes.",
+      "inputData": "Online registration form, ID verification API (98% success rate), automated email system, self-service portal. Monthly volume: 200 new customers.",
+      "goal": "Maintain current speed while improving completion rate from 85% to 95%."
+    },
+    "expectedBehaviour": {
+      "efficiencyScoreRange": [65, 95],
+      "requiredFields": ["processId", "processName", "efficiency", "summary"]
+    }
+  }
+]

@@ -1,0 +1,77 @@
+[
+  {
+    "id": "eval-cust-001",
+    "description": "High-value loyal customer with strong engagement",
+    "input": {
+      "companyName": "TechFlow Solutions",
+      "industry": "Technology",
+      "employeeCount": 450,
+      "annualRevenue": 85000000,
+      "contactName": "Sarah Chen",
+      "contactEmail": "sarah.chen@techflow.example.com",
+      "accountAge": "4 years",
+      "paymentHistory": "Consistently on time, no missed payments in 4 years",
+      "activities": [
+        { "type": "Meeting", "date": "2024-01-22", "description": "Quarterly business review - discussed expansion plans", "outcome": "Positive - exploring enterprise tier" },
+        { "type": "Call", "date": "2024-02-05", "description": "Follow-up on enterprise pricing", "outcome": "Requested formal proposal" },
+        { "type": "Meeting", "date": "2024-03-10", "description": "Executive alignment session", "outcome": "Budget approved for Q2" }
+      ]
+    },
+    "expectedBehaviour": {
+      "riskLevel": "Low",
+      "riskScoreRange": [0, 30],
+      "churnProbability": "Low",
+      "engagementTrend": "Increasing",
+      "requiredFields": ["customerId", "companyName", "riskScore", "riskLevel", "summary"]
+    }
+  },
+  {
+    "id": "eval-cust-002",
+    "description": "Medium-engagement customer with declining activity",
+    "input": {
+      "companyName": "Meridian Logistics",
+      "industry": "Supply Chain",
+      "employeeCount": 120,
+      "annualRevenue": 15000000,
+      "contactName": "James Rivera",
+      "contactEmail": "jrivera@meridian.example.com",
+      "accountAge": "18 months",
+      "paymentHistory": "Generally on time, two late payments in last quarter",
+      "activities": [
+        { "type": "Call", "date": "2024-01-10", "description": "Quarterly check-in", "outcome": "Brief conversation, seemed distracted" },
+        { "type": "Email", "date": "2024-02-28", "description": "Sent feature update newsletter", "outcome": "No response" }
+      ]
+    },
+    "expectedBehaviour": {
+      "riskLevel": "Medium",
+      "riskScoreRange": [30, 70],
+      "churnProbability": "Medium",
+      "engagementTrend": "Declining",
+      "requiredFields": ["customerId", "companyName", "riskScore", "riskLevel", "summary"]
+    }
+  },
+  {
+    "id": "eval-cust-003",
+    "description": "At-risk customer with payment issues and no recent engagement",
+    "input": {
+      "companyName": "Pinnacle Retail Group",
+      "industry": "Retail",
+      "employeeCount": 80,
+      "annualRevenue": 8000000,
+      "contactName": "David Kim",
+      "contactEmail": "dkim@pinnacle.example.com",
+      "accountAge": "3 years",
+      "paymentHistory": "Three missed payments in last 6 months, currently 45 days overdue",
+      "activities": [
+        { "type": "Call", "date": "2023-09-15", "description": "Escalation call about billing issues", "outcome": "Expressed frustration with pricing" }
+      ]
+    },
+    "expectedBehaviour": {
+      "riskLevel": "High",
+      "riskScoreRange": [60, 100],
+      "churnProbability": "High",
+      "engagementTrend": "Declining",
+      "requiredFields": ["customerId", "companyName", "riskScore", "riskLevel", "summary"]
+    }
+  }
+]

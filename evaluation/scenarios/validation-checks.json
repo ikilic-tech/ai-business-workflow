@@ -1,0 +1,54 @@
+{
+  "name": "Structured Output Validation",
+  "description": "Scenarios that verify AI responses can be parsed and validated regardless of the model used",
+  "checks": [
+    {
+      "id": "val-001",
+      "name": "Required fields present",
+      "description": "Every analysis response must contain all required fields as defined in the typed model",
+      "appliesTo": ["customer-risk", "activity-summary", "opportunity-analysis", "recommended-actions", "business-workflow"]
+    },
+    {
+      "id": "val-002",
+      "name": "Risk score in valid range",
+      "description": "Risk scores must be integers between 0 and 100",
+      "appliesTo": ["customer-risk"]
+    },
+    {
+      "id": "val-003",
+      "name": "Win probability in valid range",
+      "description": "Win probability must be an integer between 0 and 100",
+      "appliesTo": ["opportunity-analysis"]
+    },
+    {
+      "id": "val-004",
+      "name": "Enum values valid",
+      "description": "Fields like riskLevel, verdict, priority must contain expected enum values",
+      "appliesTo": ["customer-risk", "opportunity-analysis", "recommended-actions"]
+    },
+    {
+      "id": "val-005",
+      "name": "Non-empty collections",
+      "description": "Analysis results should contain at least one item in key collections",
+      "appliesTo": ["customer-risk", "opportunity-analysis", "recommended-actions", "business-workflow"]
+    },
+    {
+      "id": "val-006",
+      "name": "Summary present and non-empty",
+      "description": "Every analysis must include a non-empty summary string",
+      "appliesTo": ["customer-risk", "activity-summary", "opportunity-analysis", "recommended-actions", "business-workflow"]
+    },
+    {
+      "id": "val-007",
+      "name": "Identity fields overridden",
+      "description": "Server-side identity fields (IDs, names) must match the input, not the AI output",
+      "appliesTo": ["customer-risk", "opportunity-analysis", "business-workflow"]
+    },
+    {
+      "id": "val-008",
+      "name": "Code fence stripping",
+      "description": "Parse methods must handle responses wrapped in markdown code fences",
+      "appliesTo": ["customer-risk", "activity-summary", "opportunity-analysis", "recommended-actions", "business-workflow"]
+    }
+  ]
+}

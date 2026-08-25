@@ -1,0 +1,19 @@
+[
+  {
+    "id": "eval-ra-001",
+    "description": "Sales team with declining performance and clear improvement areas",
+    "input": {
+      "businessArea": "Sales Operations",
+      "currentChallenges": "Sales cycle has lengthened from 45 to 68 days over the past two quarters. Win rate dropped from 32% to 24%. Rep productivity varies significantly.",
+      "availableResources": "12 sales reps, Salesforce CRM, $50K quarterly training budget, marketing support team of 3",
+      "goals": "Reduce sales cycle to under 50 days, improve win rate to 30%, standardize rep performance",
+      "recentMetrics": "Q4 2023: Revenue $2.1M (target $2.5M). Average deal size: $45K. Pipeline coverage: 2.1x (target 3x)."
+    },
+    "expectedBehaviour": {
+      "actionsMinCount": 2,
+      "quickWinsMinCount": 1,
+      "requiredFields": ["businessArea", "actions", "quickWins", "summary"],
+      "actionsMustHaveFields": ["title", "priority", "description"]
+    }
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "eval-opp-001",
+    "description": "Strong pipeline opportunity with champion support",
+    "input": {
+      "accountName": "Horizon Healthcare",
+      "dealValue": 250000,
+      "stage": "Proposal Sent",
+      "expectedCloseDate": "2024-06-30",
+      "competitorInfo": "Competing against HealthTech Pro (incumbent with 3-year contract ending). Our platform has better analytics and lower TCO.",
+      "notes": "CTO is our champion. CFO is cautious about switching costs but open to discussion.",
+      "activities": [
+        { "type": "Demo", "date": "2024-01-15", "description": "Full platform demo to IT team", "contactPerson": "Dr. Patel, CTO" },
+        { "type": "Meeting", "date": "2024-02-10", "description": "Technical deep-dive with engineering leads", "contactPerson": "Maria Santos, VP Engineering" },
+        { "type": "Proposal", "date": "2024-02-28", "description": "Formal proposal delivered with ROI analysis", "contactPerson": "Dr. Patel, CTO" }
+      ]
+    },
+    "expectedBehaviour": {
+      "winProbabilityRange": [50, 85],
+      "verdictOptions": ["Strong Win", "Likely Win"],
+      "strengthsMinCount": 1,
+      "requiredFields": ["opportunityId", "accountName", "winProbability", "verdict", "summary"]
+    }
+  },
+  {
+    "id": "eval-opp-002",
+    "description": "At-risk deal with stalled engagement",
+    "input": {
+      "accountName": "Atlas Manufacturing",
+      "dealValue": 75000,
+      "stage": "Negotiation",
+      "expectedCloseDate": "2024-04-15",
+      "competitorInfo": "Main competitor offered 30% discount. Internal team is also evaluating a build-vs-buy option.",
+      "notes": "Contact has gone quiet for 3 weeks. Last email unanswered. Budget may have been reallocated.",
+      "activities": [
+        { "type": "Demo", "date": "2023-11-20", "description": "Initial demo to operations team", "contactPerson": "Tom Blake, Ops Manager" },
+        { "type": "Call", "date": "2024-01-08", "description": "Follow-up call - voicemail left", "contactPerson": "Tom Blake, Ops Manager" }
+      ]
+    },
+    "expectedBehaviour": {
+      "winProbabilityRange": [10, 45],
+      "verdictOptions": ["At Risk", "Likely Loss", "Toss-Up"],
+      "weaknessesMinCount": 1,
+      "requiredFields": ["opportunityId", "accountName", "winProbability", "verdict", "summary"]
+    }
+  }
+]

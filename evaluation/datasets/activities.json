@@ -1,0 +1,26 @@
+[
+  {
+    "id": "eval-act-001",
+    "description": "Active sales department with mixed activity types",
+    "input": {
+      "department": "Sales",
+      "period": "Q1 2024",
+      "activities": [
+        { "employeeName": "Alice Johnson", "activityType": "Cold Call", "date": "2024-01-08", "duration": "25 min", "description": "Outbound call to prospect in fintech", "result": "Meeting scheduled for Jan 15" },
+        { "employeeName": "Alice Johnson", "activityType": "Meeting", "date": "2024-01-15", "duration": "45 min", "description": "Discovery meeting with fintech prospect", "result": "Qualified opportunity" },
+        { "employeeName": "Bob Martinez", "activityType": "Cold Call", "date": "2024-01-10", "duration": "15 min", "description": "Follow-up call to lapsed account", "result": "No answer" },
+        { "employeeName": "Bob Martinez", "activityType": "Email", "date": "2024-01-12", "duration": "10 min", "description": "Sent product update to 5 prospects", "result": "2 opens, 1 reply" },
+        { "employeeName": "Carol Lee", "activityType": "Demo", "date": "2024-01-20", "duration": "60 min", "description": "Full product demo for enterprise prospect", "result": "Requested pricing" },
+        { "employeeName": "Carol Lee", "activityType": "Proposal", "date": "2024-02-01", "duration": "120 min", "description": "Prepared and sent formal proposal", "result": "Under review" },
+        { "employeeName": "Alice Johnson", "activityType": "Meeting", "date": "2024-02-10", "duration": "30 min", "description": "Negotiation meeting with fintech", "result": "Verbal commitment" },
+        { "employeeName": "Bob Martinez", "activityType": "Cold Call", "date": "2024-02-15", "duration": "20 min", "description": "New outbound to healthcare sector", "result": "Interested, requested info" }
+      ]
+    },
+    "expectedBehaviour": {
+      "totalActivities": 8,
+      "uniqueEmployees": 3,
+      "categoryMinCount": 2,
+      "requiredFields": ["department", "period", "totalActivities", "uniqueEmployees", "summary"]
+    }
+  }
+]
