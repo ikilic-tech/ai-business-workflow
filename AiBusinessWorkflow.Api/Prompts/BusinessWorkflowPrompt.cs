@@ -5,11 +5,6 @@ namespace AiBusinessWorkflow.Api.Prompts;
 
 public sealed class BusinessWorkflowPrompt : PromptBase
 {
-    public override string Version => "1.0.0";
-    public override string Purpose => "Analyze a business process and return structured optimization insights.";
-    public override string ExpectedInput => "BusinessProcess with name, description, inputData, and goal.";
-    public override string ExpectedOutput => "BusinessProcessAnalysis JSON with efficiency, bottlenecks, recommendations, automation opportunities.";
-
     public static string Build(BusinessProcess process)
     {
         return $$"""

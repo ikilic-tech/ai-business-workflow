@@ -5,11 +5,6 @@ namespace AiBusinessWorkflow.Api.Prompts;
 
 public sealed class ActivitySummaryPrompt : PromptBase
 {
-    public override string Version => "1.0.0";
-    public override string Purpose => "Summarize department activities for a given period with trends and category breakdown.";
-    public override string ExpectedInput => "ActivitySummaryRequest with department, period, and activity list.";
-    public override string ExpectedOutput => "ActivitySummaryReport JSON with totals, findings, category breakdown, trends.";
-
     public static string Build(ActivitySummaryRequest request)
     {
         var activitiesText = string.Join("\n", request.Activities.Select(a =>
