@@ -23,6 +23,7 @@ public class CustomerProfile
     public string ContactName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "ContactEmail is required.")]
+    [EmailAddress(ErrorMessage = "ContactEmail must be a valid email address.")]
     [StringLength(200, ErrorMessage = "ContactEmail must be at most 200 characters.")]
     public string ContactEmail { get; set; } = string.Empty;
 
