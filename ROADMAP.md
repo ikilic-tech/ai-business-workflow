@@ -37,30 +37,31 @@ This roadmap separates what already exists from what is planned.
 - [x] Recommended actions
 - [x] Management dashboard
 
-## Phase 5 — AI-Native Engineering — Next
+## Phase 5 — AI-Native Engineering — Implemented
 
-- [ ] Add `AI_NATIVE.md`
-- [ ] Document human/AI responsibility boundaries
-- [ ] Add architecture decision records
-- [ ] Record reproducible AI development workflow
-- [ ] Add prompt/version strategy
-- [ ] Add AI regression tests
-- [ ] Build evaluation dataset
+- [x] Add `AI_NATIVE.md`
+- [x] Document human/AI responsibility boundaries
+- [x] Add architecture decision records (ADR-001 through ADR-004)
+- [x] Record reproducible AI development workflow
+- [x] Add prompt/version strategy (versioned prompt classes in Prompts/)
+- [x] Add AI regression tests (6 prompt injection regression tests)
+- [x] Build evaluation dataset (synthetic datasets for all 5 analysis types)
+- [x] Add structured output validation (AiResponseValidator)
 - [ ] Build benchmark harness
 - [ ] Measure latency/cost/reliability
 - [ ] Compare AI against deterministic baseline
 - [ ] Add adversarial prompt evaluation
 
-## Phase 6 — Open Source Maturity — Next
+## Phase 6 — Open Source Maturity — Partially Implemented
 
-- [ ] CONTRIBUTING.md
-- [ ] CODE_OF_CONDUCT.md
-- [ ] Issue templates
-- [ ] Pull-request template
-- [ ] Security policy
+- [x] CONTRIBUTING.md
+- [x] CODE_OF_CONDUCT.md
+- [x] Issue templates (bug report, feature request, security)
+- [x] Pull-request template
+- [x] Security policy (SECURITY.md)
 - [ ] Good-first-issue list
 - [ ] Release/versioning policy
-- [ ] Changelog
+- [x] Changelog (CHANGELOG.md)
 - [ ] Public demo
 - [ ] Community examples
 
