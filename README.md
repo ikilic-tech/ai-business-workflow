@@ -114,7 +114,7 @@ See [AI_NATIVE.md](AI_NATIVE.md).
 - GitHub Actions CI/CD
 - Swagger/OpenAPI
 - OWASP-oriented security hardening
-- 185+ unit and integration tests at the current project baseline
+- 214 unit and integration tests at the current project baseline
 
 ### AI-native engineering
 
@@ -221,8 +221,8 @@ See [ARCHITECTURE.md](ARCHITECTURE.md).
 ## Installation
 
 ```bash
-git clone https://github.com/ibrahimkilic/AiBusinessWorkflow.git
-cd AiBusinessWorkflow
+git clone https://github.com/ikilic-tech/ai-business-workflow.git
+cd ai-business-workflow
 dotnet restore
 ```
 
@@ -489,15 +489,18 @@ See [AI_NATIVE.md](AI_NATIVE.md).
 
 # Evaluation
 
-The next phase adds reproducible evaluation for:
+The project includes a reproducible evaluation framework covering:
 
-- output validity
-- business-intelligence quality
-- latency
-- cost
-- reliability
-- regression behaviour
-- AI-vs-baseline comparisons
+- output validity (structured output validation via AiResponseValidator)
+- business-intelligence quality (synthetic datasets for all 5 analysis types)
+- regression behaviour (AI regression tests and prompt injection tests)
+
+Planned but not yet implemented:
+
+- latency and cost measurement
+- benchmark harness for reproducible experiments
+- AI-vs-deterministic-baseline comparisons
+- adversarial prompt evaluation
 
 No benchmark number will be published until it is produced by a reproducible experiment.
 
@@ -560,30 +563,45 @@ See [SECURITY.md](SECURITY.md).
 - [x] Recommended actions
 - [x] Management dashboard
 
-## Phase 5 — AI-Native Engineering — Planned
+## Phase 5 — AI-Native Engineering — Implemented
 
-- [ ] AI-native methodology documentation
-- [ ] Architecture Decision Records
-- [ ] AI evaluation dataset
+- [x] AI-native methodology documentation (AI_NATIVE.md)
+- [x] Architecture Decision Records (ADR-001 through ADR-004)
+- [x] AI evaluation dataset (synthetic datasets for all 5 analysis types)
+- [x] Prompt/version strategy (versioned prompt classes in Prompts/)
+- [x] AI regression tests (validation + prompt injection tests)
+- [x] Structured output validation (AiResponseValidator)
 - [ ] Reproducible benchmark harness
-- [ ] Prompt/version evaluation
-- [ ] AI regression tests
 - [ ] Cost/latency measurement
-- [ ] Human-vs-AI workflow analysis
+- [ ] AI-vs-deterministic-baseline comparison
+- [ ] Adversarial prompt evaluation
 
-## Phase 6 — Open Source & External Impact — Planned
+## Phase 6 — Open Source Maturity — Partially Implemented
 
+- [x] CONTRIBUTING.md
+- [x] CODE_OF_CONDUCT.md
+- [x] Issue templates (bug report, feature request, security)
+- [x] Pull-request template
+- [x] Security policy (SECURITY.md)
+- [x] Changelog (CHANGELOG.md)
+- [ ] Good-first-issue list
+- [ ] Release/versioning policy
 - [ ] Public demo
-- [ ] Contribution guide
-- [ ] Issue templates
-- [ ] Pull-request template
-- [ ] Good-first-issue catalogue
 - [ ] Community examples
-- [ ] External contributors
-- [ ] Integration examples
-- [ ] Public release notes
+
+## Phase 7 — External Impact — Goal
+
+- [ ] External users and contributors
+- [ ] GitHub stars/forks growth
 - [ ] Technical articles
 - [ ] Independent references and adoption evidence
+
+## Phase 8 — Research & Publication
+
+- [ ] AI-native engineering case study
+- [ ] Benchmark publication
+- [ ] Cost/quality/latency analysis
+- [ ] Lessons learned
 
 ---
 
