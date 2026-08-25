@@ -166,9 +166,9 @@ public class AiService : IAiService
         if (analysis is null)
             throw new InvalidOperationException("Failed to deserialize AI response into BusinessProcessAnalysis.");
 
-        // Ensure processId and processName are set correctly
         analysis.ProcessId = processId;
         analysis.ProcessName = processName;
+        AiResponseValidator.Validate(analysis);
 
         return analysis;
     }
@@ -184,6 +184,7 @@ public class AiService : IAiService
 
         result.CustomerId = customerId;
         result.CompanyName = companyName;
+        AiResponseValidator.Validate(result);
 
         return result;
     }
@@ -199,6 +200,7 @@ public class AiService : IAiService
 
         result.Department = department;
         result.Period = period;
+        AiResponseValidator.Validate(result);
 
         return result;
     }
@@ -214,6 +216,7 @@ public class AiService : IAiService
 
         result.OpportunityId = opportunityId;
         result.AccountName = accountName;
+        AiResponseValidator.Validate(result);
 
         return result;
     }
@@ -228,6 +231,7 @@ public class AiService : IAiService
             throw new InvalidOperationException("Failed to deserialize AI response into RecommendedActionsReport.");
 
         result.BusinessArea = businessArea;
+        AiResponseValidator.Validate(result);
 
         return result;
     }
