@@ -44,7 +44,7 @@ public class AiService : IAiService
 
     public async Task<BusinessProcessAnalysis> AnalyzeBusinessProcessAsync(BusinessProcess process, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Analyzing business process {ProcessId}: {ProcessName}", process.Id, process.Name);
+        _logger.LogDebug("Analyzing business process {ProcessId}: {ProcessName}", process.Id, process.Name);
 
         try
         {
@@ -65,7 +65,7 @@ public class AiService : IAiService
 
     public async Task<CustomerRiskAssessment> AssessCustomerRiskAsync(CustomerProfile customer, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Assessing customer risk for {CustomerId}: {CompanyName}", customer.CustomerId, customer.CompanyName);
+        _logger.LogDebug("Assessing customer risk for {CustomerId}: {CompanyName}", customer.CustomerId, customer.CompanyName);
 
         try
         {
@@ -86,7 +86,7 @@ public class AiService : IAiService
 
     public async Task<ActivitySummaryReport> SummarizeActivitiesAsync(ActivitySummaryRequest request, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Summarizing activities for {Department}, period {Period}", request.Department, request.Period);
+        _logger.LogDebug("Summarizing activities for {Department}, period {Period}", request.Department, request.Period);
 
         try
         {
@@ -107,7 +107,7 @@ public class AiService : IAiService
 
     public async Task<OpportunityAnalysisResult> AnalyzeOpportunityAsync(Opportunity opportunity, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Analyzing opportunity {OpportunityId}: {AccountName}", opportunity.OpportunityId, opportunity.AccountName);
+        _logger.LogDebug("Analyzing opportunity {OpportunityId}: {AccountName}", opportunity.OpportunityId, opportunity.AccountName);
 
         try
         {
@@ -128,7 +128,7 @@ public class AiService : IAiService
 
     public async Task<RecommendedActionsReport> GenerateRecommendedActionsAsync(RecommendedActionsRequest request, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Generating recommended actions for {BusinessArea}", request.BusinessArea);
+        _logger.LogDebug("Generating recommended actions for {BusinessArea}", request.BusinessArea);
 
         try
         {
