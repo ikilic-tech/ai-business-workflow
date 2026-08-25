@@ -1,11 +1,13 @@
 using AiBusinessWorkflow.Api.Models;
 using AiBusinessWorkflow.Api.Services.AI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AiBusinessWorkflow.Api.Controllers;
 
 [ApiController]
 [Route("api/business-workflow")]
+[EnableRateLimiting("ai")]
 public class BusinessWorkflowController : ControllerBase
 {
     private readonly IAiService _aiService;

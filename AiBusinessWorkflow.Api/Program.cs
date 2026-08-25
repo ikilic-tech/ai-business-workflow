@@ -1,4 +1,6 @@
 using System.ClientModel;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using OpenAI.Responses;
 using AiBusinessWorkflow.Api.Endpoints;
 using AiBusinessWorkflow.Api.HealthChecks;
@@ -38,6 +40,23 @@ builder.Services.AddScoped<AiService>();
 builder.Services.AddScoped<IAiService>(sp =>
     new MeteredAiService(sp.GetRequiredService<AiService>(), sp.GetRequiredService<AiCallMetrics>()));
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("fixed", opt =>
+    {
+        opt.PermitLimit = 100;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueLimit = 0;
+    });
+    options.AddFixedWindowLimiter("ai", opt =>
+    {
+        opt.PermitLimit = 20;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueLimit = 0;
+    });
+});
+
 builder.Services.AddHealthChecks()
     .AddCheck<AiHealthCheck>("ai", tags: new[] { "ready" })
     .AddCheck<MemoryHealthCheck>("memory", tags: new[] { "ready" });
@@ -53,6 +72,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<ApiKeyAuthMiddleware>();
+app.UseRateLimiter();
 
 if (!app.Environment.IsDevelopment())
 {
