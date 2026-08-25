@@ -1,8 +1,8 @@
 # Roadmap
 
-This roadmap separates what already exists from what is planned.
+## Completed
 
-## Phase 1 — Foundation — Complete
+### Phase 1 — Foundation
 
 - [x] Repository and solution structure
 - [x] Business workflow model
@@ -11,7 +11,7 @@ This roadmap separates what already exists from what is planned.
 - [x] Sample data
 - [x] Unit/integration tests
 
-## Phase 2 — AI Integration — Complete
+### Phase 2 — AI Integration
 
 - [x] OpenAI Responses API
 - [x] Prompt construction
@@ -19,7 +19,7 @@ This roadmap separates what already exists from what is planned.
 - [x] Structured JSON output
 - [x] Input validation and sanitization
 
-## Phase 3 — Production Readiness — Complete
+### Phase 3 — Production Readiness
 
 - [x] API authentication
 - [x] Correlation IDs
@@ -29,7 +29,7 @@ This roadmap separates what already exists from what is planned.
 - [x] RFC 7807 errors
 - [x] Security hardening
 
-## Phase 4 — Business Intelligence — Complete
+### Phase 4 — Business Intelligence
 
 - [x] Customer risk scoring
 - [x] Activity summarization
@@ -37,43 +37,43 @@ This roadmap separates what already exists from what is planned.
 - [x] Recommended actions
 - [x] Management dashboard
 
-## Phase 5 — AI-Native Engineering — Complete
+### Phase 5 — AI Engineering
 
-- [x] Add `AI_NATIVE.md`
-- [x] Document human/AI responsibility boundaries
-- [x] Add architecture decision records (ADR-001 through ADR-004)
-- [x] Record reproducible AI development workflow
-- [x] Add prompt/version strategy (versioned prompt classes in Prompts/)
-- [x] Add AI regression tests (6 prompt injection regression tests)
-- [x] Build evaluation dataset (synthetic datasets for all 5 analysis types)
-- [x] Add structured output validation (AiResponseValidator)
-- [x] Build benchmark harness (evaluation dataset runner with timing + validation)
-- [x] Add adversarial prompt evaluation (13 tests, 10 attack scenarios, tag injection fix)
-- [x] Measure latency/cost/reliability (AiCallMetrics + MeteredAiService + /api/ai/metrics endpoint)
-- [x] Compare AI against deterministic baseline (DeterministicBaselineService with rule-based analysis)
+- [x] AI-native methodology documentation (AI_NATIVE.md)
+- [x] Architecture decision records (ADR-001 through ADR-004)
+- [x] Prompt versioning (versioned prompt classes in Prompts/)
+- [x] AI regression tests (prompt injection + validation tests)
+- [x] Structured output validation (AiResponseValidator)
+- [x] Evaluation framework (synthetic datasets for all 5 analysis types)
+- [x] Benchmark harness (evaluation dataset runner with timing + validation)
+- [x] Adversarial prompt evaluation (13 tests, 10 attack scenarios)
+- [x] Latency/metrics tracking (AiCallMetrics + MeteredAiService + /api/ai/metrics)
+- [x] Deterministic baseline comparison (DeterministicBaselineService)
 
-## Phase 6 — Open Source Maturity — Complete
+### Phase 6 — Open Source & Documentation
 
-- [x] CONTRIBUTING.md
-- [x] CODE_OF_CONDUCT.md
-- [x] Issue templates (bug report, feature request, security)
-- [x] Pull-request template
-- [x] Security policy (SECURITY.md)
-- [x] Good-first-issue list (5 issues created on GitHub)
-- [x] Release/versioning policy (RELEASE.md)
-- [x] Changelog (CHANGELOG.md)
-- [x] Public demo (Swagger UI + Docker Compose + example scripts)
-- [x] Community examples (examples/api-examples.sh)
-
-## Phase 7 — External Impact — Complete
-
-- [x] GitHub repository optimized (description, 10 topics, Discussions enabled)
-- [x] Python integration example (examples/python-client.py)
-- [x] Community discussion enabled (GitHub Discussions)
-
-## Phase 8 — Research & Publication — Complete
-
-- [x] AI-native engineering case study (docs/CASE_STUDY.md)
-- [x] Benchmark publication (docs/BENCHMARK_RESULTS.md)
-- [x] Cost/quality/latency analysis (docs/COST_QUALITY_LATENCY.md)
+- [x] CONTRIBUTING.md, CODE_OF_CONDUCT.md, SECURITY.md
+- [x] Issue templates and PR template
+- [x] Changelog and release policy
+- [x] Community examples (api-examples.sh, python-client.py)
+- [x] Docker Compose + Swagger UI
+- [x] GitHub Discussions enabled
+- [x] Engineering case study (docs/CASE_STUDY.md)
+- [x] Benchmark results documentation (docs/BENCHMARK_RESULTS.md)
+- [x] Cost/quality/latency analysis framework (docs/COST_QUALITY_LATENCY.md)
 - [x] Lessons learned (docs/LESSONS_LEARNED.md)
+
+## Future Work
+
+These are planned improvements. Implementation priority depends on project needs.
+
+- [ ] Additional AI providers (Azure OpenAI, Anthropic)
+- [ ] Database persistence layer
+- [ ] Caching for repeated analyses
+- [ ] Rate limiting
+- [ ] Live AI benchmark runs against real providers
+- [ ] Model comparison (GPT-4o vs GPT-4o-mini quality/cost)
+- [ ] Improved observability (OpenTelemetry integration)
+- [ ] Event-driven workflow support
+- [ ] Token usage tracking per analysis
+- [ ] Static analysis tooling in CI

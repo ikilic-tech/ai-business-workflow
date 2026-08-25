@@ -99,7 +99,7 @@ For each substantial feature:
 11. Run CI.
 12. Measure the result.
 
-## Evidence and reproducibility
+## Reproducibility
 
 When practical, record:
 
@@ -114,18 +114,7 @@ When practical, record:
 
 Do not commit secrets or private data.
 
-## What this project does not claim
-
-This project does not claim:
-
-- that AI can replace software engineers
-- that all generated code is correct
-- that AI-generated results are automatically reliable
-- that benchmark results exist before they are measured
-
-The purpose is to test and document a workflow.
-
-## Research questions
+## Open questions
 
 - Which engineering tasks benefit most from AI?
 - How does AI affect development speed?

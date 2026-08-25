@@ -177,12 +177,6 @@ Each benchmark run should record:
 
 ## Publication rule
 
-Only measured results may appear in:
-
-- README
-- technical articles
-- presentations
-- Global Talent evidence
-- public claims
+Only measured results may appear in README, technical articles, presentations, or public claims.
 
 Hypotheses must be labelled as hypotheses.

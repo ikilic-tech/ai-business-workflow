@@ -14,7 +14,7 @@ MAJOR.MINOR.PATCH
 
 ## Current Version
 
-The project is in **pre-release** (`0.x.y`) until Phase 6 is fully complete. During pre-release:
+The project is in **pre-release** (`0.x.y`). During pre-release:
 
 - Minor version increments may include breaking changes
 - The API surface is not yet frozen

@@ -10,16 +10,20 @@ The project therefore treats security as part of architecture, development and e
 
 The current implementation includes:
 
-- prompt-injection input protection
-- collection-size limits
-- request-body size cap
-- timing-safe API-key comparison
+- prompt-injection input protection (InputSanitizer + `<user_data>` boundary tags)
+- collection-size limits (MaxLength on all collection properties)
+- request-body size cap (5 MB Kestrel limit)
+- timing-safe API-key comparison (CryptographicOperations.FixedTimeEquals)
 - API-key enforcement outside Development
-- security response headers
+- security response headers (X-Content-Type-Options, X-Frame-Options, CSP, HSTS)
 - dashboard timeout handling
-- correlation ID validation
+- correlation ID validation (GUID format enforcement)
 - global exception handling
 - no real customer data in the public repository
+- automated dependency vulnerability scanning (CI)
+- secret pattern scanning in CI
+- adversarial prompt evaluation tests (13 tests covering 10 attack vectors)
+- adversarial prompt test dataset (evaluation/datasets/adversarial.json)
 
 ## Threat model
 
@@ -95,15 +99,9 @@ Maintain:
 - secret management
 - logging without sensitive values
 
-## Security verification roadmap
+## Planned
 
-Planned:
-
-- automated dependency vulnerability scanning
-- secret scanning in CI
-- static analysis
-- AI-specific security regression tests
-- adversarial prompt test dataset
+- static analysis tooling
 - threat-model review per major feature
 - security benchmark reporting
 

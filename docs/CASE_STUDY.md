@@ -2,7 +2,7 @@
 
 ## Abstract
 
-This document presents a case study of building a production-grade .NET 8 Web API using AI-native engineering methodology. The project demonstrates that AI can participate meaningfully in the full software development lifecycle — from architecture through implementation, testing, security, and documentation — while humans retain responsibility for direction, review, and final decisions.
+This document presents a case study of building a .NET 8 Web API using AI-native engineering methodology. It explores how AI participates in the software development lifecycle — from architecture through implementation, testing, security, and documentation — while humans retain responsibility for direction, review, and final decisions.
 
 ## 1. Background
 
@@ -161,7 +161,7 @@ Synthetic datasets cover all 5 analysis types with expected behaviour criteria:
 
 AI-native engineering is not about replacing human developers. It is about changing the distribution of effort: humans focus on direction, architecture, and judgment while AI handles exploration, implementation, and repetitive verification.
 
-The project demonstrates that this model can produce a well-architected, tested, and documented system — but the human role remains essential for quality, coherence, and strategic decisions.
+This project explores whether that model can produce a well-architected, tested, and documented system. The human role remains essential for quality, coherence, and strategic decisions.
 
 ## References
 
