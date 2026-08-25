@@ -9,6 +9,7 @@ namespace AiBusinessWorkflow.Api.Controllers;
 [ApiController]
 [Route("api/intelligence")]
 [EnableRateLimiting("ai")]
+[Consumes("application/json")]
 public class BusinessIntelligenceController : ControllerBase
 {
     private readonly IAiService _aiService;
