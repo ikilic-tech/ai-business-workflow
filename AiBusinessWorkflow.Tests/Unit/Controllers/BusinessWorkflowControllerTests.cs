@@ -44,10 +44,10 @@ public class BusinessWorkflowControllerTests
     {
         var process = CreateValidProcess();
         var analysis = CreateSampleAnalysis();
-        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(analysis);
 
-        var result = await _controller.Analyze(process);
+        var result = await _controller.Analyze(process, CancellationToken.None);
 
         var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         var returnedAnalysis = okResult.Value.Should().BeOfType<BusinessProcessAnalysis>().Subject;
@@ -59,10 +59,10 @@ public class BusinessWorkflowControllerTests
     public async Task Analyze_WhenServiceThrows_ShouldPropagateException()
     {
         var process = CreateValidProcess();
-        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("AI service failed"));
 
-        var act = () => _controller.Analyze(process);
+        var act = () => _controller.Analyze(process, CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("AI service failed");
@@ -73,10 +73,10 @@ public class BusinessWorkflowControllerTests
     {
         var process = CreateValidProcess();
         var analysis = CreateSampleAnalysis();
-        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(analysis);
 
-        var result = await _controller.Analyze(process);
+        var result = await _controller.Analyze(process, CancellationToken.None);
 
         result.Should().BeOfType<ActionResult<BusinessProcessAnalysis>>();
     }
@@ -86,12 +86,12 @@ public class BusinessWorkflowControllerTests
     {
         var process = CreateValidProcess();
         var analysis = CreateSampleAnalysis();
-        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>()))
+        _mockAiService.Setup(s => s.AnalyzeBusinessProcessAsync(It.IsAny<BusinessProcess>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(analysis);
 
-        await _controller.Analyze(process);
+        await _controller.Analyze(process, CancellationToken.None);
 
         _mockAiService.Verify(s => s.AnalyzeBusinessProcessAsync(
-            It.Is<BusinessProcess>(p => p.Id == "test-001")), Times.Once);
+            It.Is<BusinessProcess>(p => p.Id == "test-001"), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

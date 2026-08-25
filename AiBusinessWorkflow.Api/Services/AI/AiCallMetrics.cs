@@ -5,17 +5,21 @@ namespace AiBusinessWorkflow.Api.Services.AI;
 
 public sealed class AiCallMetrics
 {
-    private readonly ConcurrentBag<AiCallRecord> _records = new();
+    private const int MaxRecords = 10_000;
+    private readonly ConcurrentQueue<AiCallRecord> _records = new();
 
     public void Record(string operation, long elapsedMs, bool success)
     {
-        _records.Add(new AiCallRecord
+        _records.Enqueue(new AiCallRecord
         {
             Operation = operation,
             ElapsedMs = elapsedMs,
             Success = success,
             Timestamp = DateTimeOffset.UtcNow
         });
+
+        while (_records.Count > MaxRecords)
+            _records.TryDequeue(out _);
     }
 
     public AiMetricsSummary GetSummary()

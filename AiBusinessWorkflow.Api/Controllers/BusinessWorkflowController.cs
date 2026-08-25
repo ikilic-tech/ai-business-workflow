@@ -1,11 +1,13 @@
 using AiBusinessWorkflow.Api.Models;
 using AiBusinessWorkflow.Api.Services.AI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AiBusinessWorkflow.Api.Controllers;
 
 [ApiController]
 [Route("api/business-workflow")]
+[EnableRateLimiting("ai")]
 public class BusinessWorkflowController : ControllerBase
 {
     private readonly IAiService _aiService;
@@ -16,9 +18,9 @@ public class BusinessWorkflowController : ControllerBase
     }
 
     [HttpPost("analyze")]
-    public async Task<ActionResult<BusinessProcessAnalysis>> Analyze(BusinessProcess process)
+    public async Task<ActionResult<BusinessProcessAnalysis>> Analyze(BusinessProcess process, CancellationToken cancellationToken)
     {
-        var result = await _aiService.AnalyzeBusinessProcessAsync(process);
+        var result = await _aiService.AnalyzeBusinessProcessAsync(process, cancellationToken);
         return Ok(result);
     }
 }
