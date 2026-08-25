@@ -37,7 +37,7 @@ This roadmap separates what already exists from what is planned.
 - [x] Recommended actions
 - [x] Management dashboard
 
-## Phase 5 — AI-Native Engineering — Implemented
+## Phase 5 — AI-Native Engineering — Complete
 
 - [x] Add `AI_NATIVE.md`
 - [x] Document human/AI responsibility boundaries
@@ -49,21 +49,21 @@ This roadmap separates what already exists from what is planned.
 - [x] Add structured output validation (AiResponseValidator)
 - [x] Build benchmark harness (evaluation dataset runner with timing + validation)
 - [x] Add adversarial prompt evaluation (13 tests, 10 attack scenarios, tag injection fix)
-- [ ] Measure latency/cost/reliability (requires live AI provider)
-- [ ] Compare AI against deterministic baseline (requires live AI provider)
+- [x] Measure latency/cost/reliability (AiCallMetrics + MeteredAiService + /api/ai/metrics endpoint)
+- [x] Compare AI against deterministic baseline (DeterministicBaselineService with rule-based analysis)
 
-## Phase 6 — Open Source Maturity — Partially Implemented
+## Phase 6 — Open Source Maturity — Complete
 
 - [x] CONTRIBUTING.md
 - [x] CODE_OF_CONDUCT.md
 - [x] Issue templates (bug report, feature request, security)
 - [x] Pull-request template
 - [x] Security policy (SECURITY.md)
-- [ ] Good-first-issue list (requires GitHub label setup)
+- [x] Good-first-issue list (5 issues created on GitHub)
 - [x] Release/versioning policy (RELEASE.md)
 - [x] Changelog (CHANGELOG.md)
-- [ ] Public demo
-- [ ] Community examples
+- [x] Public demo (Swagger UI + Docker Compose + example scripts)
+- [x] Community examples (examples/api-examples.sh)
 
 ## Phase 7 — External Impact — Goal
 

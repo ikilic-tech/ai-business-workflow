@@ -33,7 +33,10 @@ else
         throw new InvalidOperationException(
             "AI:ApiKey is not configured. Set it in appsettings.Local.json."));
 }
-builder.Services.AddScoped<IAiService, AiService>();
+builder.Services.AddSingleton<AiCallMetrics>();
+builder.Services.AddScoped<AiService>();
+builder.Services.AddScoped<IAiService>(sp =>
+    new MeteredAiService(sp.GetRequiredService<AiService>(), sp.GetRequiredService<AiCallMetrics>()));
 
 builder.Services.AddHealthChecks()
     .AddCheck<AiHealthCheck>("ai", tags: new[] { "ready" })
