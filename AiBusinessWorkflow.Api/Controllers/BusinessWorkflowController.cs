@@ -18,6 +18,9 @@ public class BusinessWorkflowController : ControllerBase
         _aiService = aiService;
     }
 
+    /// <summary>Analyzes a business process and returns optimization insights.</summary>
+    /// <param name="process">The business process to analyze.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("analyze")]
     public async Task<ActionResult<BusinessProcessAnalysis>> Analyze(BusinessProcess process, CancellationToken cancellationToken)
     {

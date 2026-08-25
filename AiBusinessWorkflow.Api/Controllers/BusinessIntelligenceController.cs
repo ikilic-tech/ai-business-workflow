@@ -19,6 +19,9 @@ public class BusinessIntelligenceController : ControllerBase
         _aiService = aiService;
     }
 
+    /// <summary>Assesses customer churn risk based on profile, payment history, and activity.</summary>
+    /// <param name="customer">The customer profile to assess.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("customer-risk")]
     public async Task<ActionResult<CustomerRiskAssessment>> AssessCustomerRisk(CustomerProfile customer, CancellationToken cancellationToken)
     {
@@ -26,6 +29,9 @@ public class BusinessIntelligenceController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Summarizes department activities for a given period with trends.</summary>
+    /// <param name="request">The activity summary request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("activity-summary")]
     public async Task<ActionResult<ActivitySummaryReport>> SummarizeActivities(ActivitySummaryRequest request, CancellationToken cancellationToken)
     {
@@ -33,6 +39,9 @@ public class BusinessIntelligenceController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Analyzes a sales opportunity and predicts win probability.</summary>
+    /// <param name="opportunity">The opportunity to analyze.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("opportunity-analysis")]
     public async Task<ActionResult<OpportunityAnalysisResult>> AnalyzeOpportunity(Opportunity opportunity, CancellationToken cancellationToken)
     {
@@ -40,6 +49,9 @@ public class BusinessIntelligenceController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Generates prioritized action items based on business context.</summary>
+    /// <param name="request">The recommended actions request.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("recommended-actions")]
     public async Task<ActionResult<RecommendedActionsReport>> GenerateRecommendedActions(RecommendedActionsRequest request, CancellationToken cancellationToken)
     {
@@ -47,6 +59,9 @@ public class BusinessIntelligenceController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Runs multiple analyses in parallel and returns a combined dashboard.</summary>
+    /// <param name="request">The dashboard request containing one or more analysis inputs.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
     [HttpPost("dashboard")]
     public async Task<ActionResult<DashboardSummary>> GenerateDashboard(DashboardRequest request, CancellationToken cancellationToken)
     {

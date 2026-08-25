@@ -5,11 +5,6 @@ namespace AiBusinessWorkflow.Api.Prompts;
 
 public sealed class CustomerRiskPrompt : PromptBase
 {
-    public override string Version => "1.0.0";
-    public override string Purpose => "Assess customer churn risk based on profile, payment history, and activity patterns.";
-    public override string ExpectedInput => "CustomerProfile with company details, payment history, and activity list.";
-    public override string ExpectedOutput => "CustomerRiskAssessment JSON with risk score, level, churn probability, engagement trend, risk factors.";
-
     public static string Build(CustomerProfile customer)
     {
         var activitiesText = string.Join("\n", customer.Activities.Select(a =>

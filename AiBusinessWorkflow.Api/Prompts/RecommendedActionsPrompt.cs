@@ -5,11 +5,6 @@ namespace AiBusinessWorkflow.Api.Prompts;
 
 public sealed class RecommendedActionsPrompt : PromptBase
 {
-    public override string Version => "1.0.0";
-    public override string Purpose => "Generate prioritized action items based on business context, challenges, and goals.";
-    public override string ExpectedInput => "RecommendedActionsRequest with business area, challenges, resources, goals, metrics.";
-    public override string ExpectedOutput => "RecommendedActionsReport JSON with prioritized actions, quick wins, long-term initiatives.";
-
     public static string Build(RecommendedActionsRequest request)
     {
         return $$"""

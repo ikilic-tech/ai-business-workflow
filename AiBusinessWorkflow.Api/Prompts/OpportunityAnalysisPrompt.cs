@@ -5,11 +5,6 @@ namespace AiBusinessWorkflow.Api.Prompts;
 
 public sealed class OpportunityAnalysisPrompt : PromptBase
 {
-    public override string Version => "1.0.0";
-    public override string Purpose => "Analyze a sales opportunity and predict win probability with competitive positioning.";
-    public override string ExpectedInput => "Opportunity with account details, deal value, stage, competitor info, and activities.";
-    public override string ExpectedOutput => "OpportunityAnalysisResult JSON with win probability, verdict, strengths, weaknesses, strategy.";
-
     public static string Build(Opportunity opportunity)
     {
         var activitiesText = string.Join("\n", opportunity.Activities.Select(a =>
