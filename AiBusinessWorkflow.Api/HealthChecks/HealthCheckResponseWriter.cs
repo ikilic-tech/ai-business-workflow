@@ -15,6 +15,9 @@ public static class HealthCheckResponseWriter
     {
         context.Response.ContentType = "application/json";
 
+        var env = context.RequestServices.GetRequiredService<IHostEnvironment>();
+        var isDevelopment = env.IsDevelopment();
+
         var response = new
         {
             status = report.Status.ToString(),
@@ -25,8 +28,8 @@ public static class HealthCheckResponseWriter
                 status = e.Value.Status.ToString(),
                 description = e.Value.Description,
                 duration = e.Value.Duration.TotalMilliseconds,
-                data = e.Value.Data,
-                exception = e.Value.Exception?.Message
+                data = isDevelopment ? e.Value.Data : null,
+                exception = isDevelopment ? e.Value.Exception?.Message : null
             })
         };
 

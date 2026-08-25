@@ -29,8 +29,7 @@ public class AiHealthCheck : IHealthCheck
 
             var data = new Dictionary<string, object>
             {
-                ["provider"] = _configuration["AI:Provider"] ?? "OpenAI",
-                ["model"] = _configuration["AI:Model"] ?? "gpt-4o"
+                ["configured"] = true
             };
 
             return HealthCheckResult.Healthy("AI service is reachable.", data);
