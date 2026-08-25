@@ -99,7 +99,7 @@ For each substantial feature:
 11. Run CI.
 12. Measure the result.
 
-## Evidence and reproducibility
+## Reproducibility
 
 When practical, record:
 
