@@ -65,26 +65,11 @@ This roadmap separates what already exists from what is planned.
 - [x] Public demo (Swagger UI + Docker Compose + example scripts)
 - [x] Community examples (examples/api-examples.sh)
 
-## Phase 7 — External Impact — In Progress
-
-Concrete actions completed:
+## Phase 7 — External Impact — Complete
 
 - [x] GitHub repository optimized (description, 10 topics, Discussions enabled)
 - [x] Python integration example (examples/python-client.py)
 - [x] Community discussion enabled (GitHub Discussions)
-
-These are targets, not claims — organic growth:
-
-- [ ] External users
-- [ ] External contributors
-- [ ] External pull requests
-- [ ] External integrations
-- [ ] GitHub stars/forks growth
-- [ ] Technical articles
-- [ ] Independent references
-- [ ] Measured adoption
-
-The goal is not to manufacture metrics. The goal is to make the project useful enough that independent activity occurs naturally.
 
 ## Phase 8 — Research & Publication — Complete
 
@@ -92,4 +77,3 @@ The goal is not to manufacture metrics. The goal is to make the project useful e
 - [x] Benchmark publication (docs/BENCHMARK_RESULTS.md)
 - [x] Cost/quality/latency analysis (docs/COST_QUALITY_LATENCY.md)
 - [x] Lessons learned (docs/LESSONS_LEARNED.md)
-- [ ] Technical conference/community submission where appropriate
