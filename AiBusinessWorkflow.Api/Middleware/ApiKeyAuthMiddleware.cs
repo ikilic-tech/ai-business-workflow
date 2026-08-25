@@ -89,7 +89,9 @@ public class ApiKeyAuthMiddleware
 
     private static bool IsPublicPath(string path)
     {
-        return PublicPaths.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase));
+        return PublicPaths.Any(p =>
+            path.Equals(p, StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith(p + "/", StringComparison.OrdinalIgnoreCase));
     }
 
     private static async Task WriteUnauthorizedResponse(HttpContext context, string detail)
