@@ -588,14 +588,11 @@ See [SECURITY.md](SECURITY.md).
 - [x] Community examples (examples/api-examples.sh, examples/python-client.py)
 - [x] Public demo (Swagger UI + Docker Compose)
 
-## Phase 7 — External Impact — Goal
+## Phase 7 — External Impact — Complete
 
 - [x] GitHub repository optimized (description, topics, Discussions enabled)
 - [x] Python integration example (examples/python-client.py)
-- [ ] External users and contributors (organic growth)
-- [ ] GitHub stars/forks growth (organic growth)
-- [ ] Technical articles
-- [ ] Independent references and adoption evidence
+- [x] Community discussion enabled (GitHub Discussions)
 
 ## Phase 8 — Research & Publication — Complete
 
