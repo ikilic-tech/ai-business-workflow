@@ -19,6 +19,17 @@ public static class InfrastructureEndpoints
             return Results.Ok(new { status = "success", response = result });
         });
 
+        app.MapGet("/api/ai/metrics", (AiCallMetrics metrics) =>
+        {
+            return Results.Ok(metrics.GetSummary());
+        });
+
+        app.MapPost("/api/ai/metrics/reset", (AiCallMetrics metrics) =>
+        {
+            metrics.Reset();
+            return Results.Ok(new { status = "reset" });
+        });
+
         return app;
     }
 }

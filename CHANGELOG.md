@@ -17,9 +17,27 @@ All notable changes to this project are documented in this file.
 - Harness validates response structure, scores, and required fields
 - Designed for extension to live AI provider testing
 
+### Latency/Cost Measurement
+
+- Added AiCallMetrics for tracking call count, latency (avg, p95, min, max), success rate per operation
+- Added MeteredAiService decorator wrapping IAiService with automatic timing
+- Added GET /api/ai/metrics and POST /api/ai/metrics/reset endpoints
+- All AI calls are automatically measured through the decorator pattern
+
+### Deterministic Baseline
+
+- Added DeterministicBaselineService implementing IAiService with rule-based analysis
+- Uses keyword matching and simple heuristics for all 5 analysis types
+- Enables comparison between AI and deterministic outputs
+
 ### Release Policy
 
 - Created RELEASE.md with semantic versioning, release process, prompt versioning table
+
+### Open Source
+
+- Created 5 good-first-issue GitHub issues (#1-#5)
+- Created examples/api-examples.sh with curl examples for all endpoints
 
 ### Documentation
 

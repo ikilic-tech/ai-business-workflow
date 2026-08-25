@@ -114,7 +114,7 @@ See [AI_NATIVE.md](AI_NATIVE.md).
 - GitHub Actions CI/CD
 - Swagger/OpenAPI
 - OWASP-oriented security hardening
-- 256 unit and integration tests at the current project baseline
+- 271 unit and integration tests at the current project baseline
 
 ### AI-native engineering
 
@@ -183,6 +183,8 @@ Infrastructure/sample endpoints include:
 ```text
 GET /api/health
 GET /api/ai/test
+GET /api/ai/metrics
+POST /api/ai/metrics/reset
 GET /api/samples
 GET /api/samples/{index}
 GET /api/samples/customers
@@ -573,10 +575,10 @@ See [SECURITY.md](SECURITY.md).
 - [x] Structured output validation (AiResponseValidator)
 - [x] Benchmark harness (evaluation dataset runner with timing + validation)
 - [x] Adversarial prompt evaluation (13 tests, 10 attack scenarios)
-- [ ] Cost/latency measurement (requires live AI provider)
-- [ ] AI-vs-deterministic-baseline comparison (requires live AI provider)
+- [x] Cost/latency measurement (AiCallMetrics + MeteredAiService + /api/ai/metrics)
+- [x] AI-vs-deterministic-baseline comparison (DeterministicBaselineService)
 
-## Phase 6 — Open Source Maturity — Partially Implemented
+## Phase 6 — Open Source Maturity — Complete
 
 - [x] CONTRIBUTING.md
 - [x] CODE_OF_CONDUCT.md
@@ -585,6 +587,8 @@ See [SECURITY.md](SECURITY.md).
 - [x] Security policy (SECURITY.md)
 - [x] Changelog (CHANGELOG.md)
 - [x] Release/versioning policy (RELEASE.md)
+- [x] Good-first-issue list (5 issues on GitHub)
+- [x] Community examples (examples/api-examples.sh)
 - [ ] Good-first-issue list
 - [ ] Release/versioning policy
 - [ ] Public demo
