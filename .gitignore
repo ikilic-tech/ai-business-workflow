@@ -8,6 +8,8 @@ obj/
 
 ## User secrets / local config
 appsettings.Local.json
+.env
+.env.*
 
 ## IDE
 .idea/

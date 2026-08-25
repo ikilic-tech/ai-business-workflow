@@ -11,7 +11,7 @@ public static class SampleDataGenerator
             Id = "sample-001",
             Name = "Customer Onboarding",
             Description = "End-to-end process for registering new B2B customers, including KYC verification, account setup, CRM record creation, and welcome email sequence.",
-            InputData = "Company name: Acme Corp, Contact: Jane Smith (jane@acme.com), Industry: Manufacturing, Employees: 250, Annual Revenue: $45M, Documents: Business registration certificate, Tax ID, Bank details",
+            InputData = "Company name: Acme Corp, Contact: Jane Smith (jane@acme.example.com), Industry: Manufacturing, Employees: 250, Annual Revenue: $45M, Documents: Business registration certificate, Tax ID, Bank details",
             Goal = "Reduce onboarding time from 5 business days to 2 business days while maintaining compliance requirements and improving first-week engagement rates."
         },
         new BusinessProcess
