@@ -15,9 +15,22 @@ appsettings.Local.json
 *.swp
 *~
 
-## Markdown (README.md hariç)
+## Markdown (allow project docs, ignore the rest)
 *.md
 !README.md
+!CONTRIBUTING.md
+!CODE_OF_CONDUCT.md
+!CHANGELOG.md
+!SECURITY.md
+!ARCHITECTURE.md
+!AI_NATIVE.md
+!AI_EVIDENCE.md
+!EVALUATION.md
+!IMPACT.md
+!ROADMAP.md
+!LICENSE.md
+!docs/**/*.md
+!evaluation/**/*.md
 
 ## OS
 .DS_Store

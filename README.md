@@ -1,193 +1,234 @@
 # AI Business Workflow
 
-**AI Native** — Architecture, code, tests, security hardening, and documentation were built entirely with [Claude Code](https://claude.com/claude-code).
+**AI Native** — A .NET 8 Web API that uses AI to analyze business data and turn it into actionable insights: risk detection, bottleneck identification, optimization suggestions, automation opportunities, and recommended next steps.
 
-A .NET 8 Web API that uses AI to analyze business data and turn it into actionable insights: risk detection, bottleneck identification, and recommended next steps.
+> **AI-native engineering experiment:** AI is used not only as a runtime capability inside the product, but also as a first-class engineering capability across planning, architecture, implementation, testing, security, documentation and iteration. Humans remain responsible for direction, architecture, review and final decisions.
+
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
+[![OpenAI](https://img.shields.io/badge/AI-OpenAI-412991)](https://openai.com/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+---
 
 ## Overview
 
-Most business applications are good at collecting data. Customer records, sales activities, visit notes, opportunities, follow-up dates. But they're not great at telling you what to *do* with it.
+Most business applications are good at collecting data: customer records, sales activities, visit notes, opportunities and follow-up dates. But they are not always good at telling people what to do with it.
 
-A sales manager might have hundreds of customer activities in the system and still spend time manually figuring out which accounts need attention, which deals are at risk, or where follow-ups have gone cold. The information is all there, but nobody has time to sift through it.
+This project closes that gap by taking structured business data through a REST API, running it through an AI analysis layer, and returning useful intelligence:
 
-This project tries to close that gap. It takes structured business data through a REST API, runs it through an AI analysis layer, and gives back something useful: efficiency analysis, bottleneck detection, optimization suggestions, and automation opportunities.
+- efficiency analysis
+- bottleneck detection
+- customer risk scoring
+- activity summarization
+- opportunity win/loss analysis
+- optimization recommendations
+- automation opportunities
+- prioritized next actions
 
+```text
+Business Data
+      ↓
+Validation & Preparation
+      ↓
+AI Analysis
+      ↓
+Structured Insights
+      ↓
+Recommended Actions
+      ↓
+Human Decision
 ```
-Business Data → Validation & Preparation → AI Analysis → Structured Insights → Recommended Actions
+
+The principle is simple:
+
+> If AI output does not help someone make a decision or take an action, it is not doing its job.
+
+## What makes this AI-native?
+
+Traditional AI-assisted development often looks like:
+
+```text
+Human → Code → AI Assistant
 ```
 
-The idea is simple: if AI output doesn't help someone make a decision or take an action, it's not doing its job.
+This project explores a broader model:
 
-**Who is this for?** Engineering teams and business stakeholders who want to get more value out of their operational data without building a full ML pipeline from scratch.
+```text
+Problem Definition
+       ↓
+AI-assisted Exploration
+       ↓
+Human Architectural Decision
+       ↓
+AI-assisted Implementation
+       ↓
+Automated Tests
+       ↓
+AI-assisted Review
+       ↓
+Security Validation
+       ↓
+Human Approval
+       ↓
+CI/CD
+       ↓
+Measurement & Feedback
+```
 
-## Key Features
+AI therefore participates in both:
 
-**What's working now:**
-- Business process analysis via OpenAI's Responses API
-- Structured JSON output: efficiency ratings, bottleneck detection, optimization recommendations, automation opportunities
+1. **The product:** business intelligence and decision support.
+2. **The engineering workflow:** architecture, implementation, testing, security and documentation.
+
+See [AI_NATIVE.md](AI_NATIVE.md).
+
+---
+
+# Key Features
+
+### Business intelligence
+
+- Business process analysis via OpenAI Responses API
+- Structured JSON output
+- Efficiency ratings
+- Bottleneck detection
+- Optimization recommendations
+- Automation opportunities
 - Customer risk scoring based on activity patterns and payment history
 - Activity summarization for management reporting
 - Opportunity win/loss analysis with competitive positioning
 - Recommended next actions engine with prioritized action items
-- Management dashboard endpoint (runs all 4 analyses in parallel)
-- Configurable model selection (GPT-4o, GPT-5.2, or any model the OpenAI SDK supports)
-- AI provider is behind an interface (`IAiService`), so swapping to a different provider doesn't touch business logic
+- Management dashboard endpoint running independent analyses in parallel
+
+### Engineering
+
+- Configurable model selection
+- AI provider abstraction through `IAiService`
 - Input validation with DataAnnotations
-- Sample business data generator with 6 business process scenarios plus BI-specific sample data (customers, opportunities, activities)
+- Synthetic/sample business data generator
 - Health checks with AI connectivity and memory monitoring
-- API key authentication middleware
-- Correlation ID tracking across requests
-- Global exception handling with RFC 7807 ProblemDetails
-- Docker support with multi-stage build
-- CI/CD pipeline with GitHub Actions
-- Swagger UI for interactive API docs
-- OWASP Top 10 security hardening (prompt injection protection, timing-safe auth, request size limits, security headers)
-- 185+ unit and integration tests
+- API key authentication
+- Correlation ID tracking
+- RFC 7807 ProblemDetails error handling
+- Docker multi-stage build
+- GitHub Actions CI/CD
+- Swagger/OpenAPI
+- OWASP-oriented security hardening
+- 185+ unit and integration tests at the current project baseline
 
-## Architecture
+### AI-native engineering
 
-Pretty standard layered setup, but the important part is that the AI provider is abstracted behind an interface. This means the rest of the application doesn't know or care whether it's talking to OpenAI, Azure OpenAI, Anthropic, or a local model.
+The project was intentionally developed with Claude Code as the primary AI engineering environment.
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                     Middleware Pipeline                       │
-│                                                              │
-│  CorrelationIdMiddleware → ExceptionHandlingMiddleware →     │
-│  ApiKeyAuthMiddleware                                        │
-│                                                              │
-│  • X-Correlation-Id tracking                                 │
-│  • RFC 7807 ProblemDetails error responses                   │
-│  • X-Api-Key authentication                                  │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-                             ▼
-┌──────────────────────────────────────────────────────────────┐
-│                        API Layer                             │
-│                                                              │
-│  Controllers:                      Endpoint Extensions:      │
-│  BusinessWorkflowController        SampleEndpoints           │
-│  POST /api/business-workflow/        GET /api/samples/*      │
-│       analyze                      InfrastructureEndpoints   │
-│                                      GET /api/health         │
-│  BusinessIntelligenceController      GET /api/ai/test        │
-│  POST /api/intelligence/                                     │
-│       customer-risk                                          │
-│       activity-summary                                       │
-│       opportunity-analysis                                   │
-│       recommended-actions                                    │
-│       dashboard                                              │
-│                                                              │
-│  Responsibilities:                                           │
-│  • Request validation & routing                              │
-│  • HTTP response mapping                                     │
-│  • Swagger/OpenAPI documentation                             │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-                             ▼
-┌──────────────────────────────────────────────────────────────┐
-│                      Service Layer                           │
-│                                                              │
-│  IAiService (interface)                                      │
-│  ├── AnalyzeBusinessProcessAsync(BusinessProcess)            │
-│  │   → returns BusinessProcessAnalysis (structured JSON)     │
-│  ├── AssessCustomerRiskAsync(CustomerProfile)                │
-│  │   → returns CustomerRiskAssessment                        │
-│  ├── SummarizeActivitiesAsync(ActivitySummaryRequest)        │
-│  │   → returns ActivitySummaryReport                         │
-│  ├── AnalyzeOpportunityAsync(Opportunity)                    │
-│  │   → returns OpportunityAnalysisResult                     │
-│  ├── GenerateRecommendedActionsAsync(RecommendedActionsReq)  │
-│  │   → returns RecommendedActionsReport                      │
-│  └── TestAiAsync()                                           │
-│                                                              │
-│  AiService (implementation)                                  │
-│  ├── Prompt construction with JSON schema                    │
-│  ├── Response parsing and deserialization                    │
-│  └── Structured logging with ILogger<T>                      │
-│                                                              │
-│  Registered via DI (scoped lifetime)                         │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-                             ▼
-┌──────────────────────────────────────────────────────────────┐
-│                   AI Provider Layer                          │
-│                                                              │
-│  OpenAI Responses API                                        │
-│  └── ResponsesClient (SDK v2.13.0)                           │
-│      • Model: configurable via appsettings (default: gpt-4o) │
-│      • Auth: ApiKeyCredential from configuration             │
-│      • Uses newer Responses API over Chat Completions        │
-│                                                              │
-│  Swappable: implement IAiService, register in DI, done.      │
-└────────────────────────────┬─────────────────────────────────┘
-                             │
-                             ▼
-┌──────────────────────────────────────────────────────────────┐
-│                    Structured Output                         │
-│                                                              │
-│  BusinessProcessAnalysis model:                              │
-│  • Process efficiency analysis (score, rating, explanation)  │
-│  • Bottleneck identification (area, severity, fix)           │
-│  • Optimization recommendations (priority, impact, effort)   │
-│  • Automation opportunities (current vs proposed)            │
-│  • Overall risk level and summary                            │
-│                                                              │
-│  Business Intelligence models:                               │
-│  • CustomerRiskAssessment (risk score, churn probability)    │
-│  • ActivitySummaryReport (trends, category breakdown)        │
-│  • OpportunityAnalysisResult (win probability, strategy)     │
-│  • RecommendedActionsReport (prioritized actions, quick wins)│
-│  • DashboardSummary (all analyses combined)                  │
-└──────────────────────────────────────────────────────────────┘
+The documented workflow covers:
+
+- natural-language planning
+- architectural exploration
+- code generation
+- iterative build/test loops
+- debugging
+- refactoring
+- test generation
+- security review
+- documentation
+
+The human role is direction, review and decision-making.
+
+See [AI_NATIVE.md](AI_NATIVE.md).
+
+---
+
+# Architecture
+
+The application uses a layered architecture with the AI provider behind an interface.
+
+```text
+Middleware Pipeline
+    ↓
+API Layer
+    ↓
+Service Layer
+    ↓
+IAiService
+    ↓
+OpenAI Responses API
+    ↓
+Structured Output Models
+    ↓
+Business Intelligence Results
 ```
 
-### Why this architecture?
+### Middleware
 
-- **Interface-based AI abstraction:** `IAiService` decouples business logic from the AI provider. Switching from OpenAI to Azure OpenAI or Anthropic means writing a new implementation class and changing one DI registration. Controllers don't change at all.
-- **Scoped DI registration:** Each HTTP request gets its own service instance. Clean lifecycle, no thread-safety headaches.
-- **Middleware pipeline:** Cross-cutting concerns (correlation tracking, error handling, authentication) are separated from business logic. Each middleware has a single responsibility.
-- **Minimal API for infrastructure, controllers for business logic:** Health check, AI test, and sample data endpoints use Minimal APIs organized into `IEndpointRouteBuilder` extension classes (`SampleEndpoints`, `InfrastructureEndpoints`). Business logic endpoints use controllers for richer model binding and validation.
+- Correlation ID
+- Exception handling
+- API key authentication
 
-## Getting Started
+### API layer
 
-### Prerequisites
+Business endpoints include:
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) (LTS)
-- An [OpenAI API key](https://platform.openai.com/api-keys)
-- (Optional) [Docker](https://www.docker.com/) for containerized deployment
+```text
+POST /api/business-workflow/analyze
 
-### Installation
+POST /api/intelligence/customer-risk
+POST /api/intelligence/activity-summary
+POST /api/intelligence/opportunity-analysis
+POST /api/intelligence/recommended-actions
+POST /api/intelligence/dashboard
+```
+
+Infrastructure/sample endpoints include:
+
+```text
+GET /api/health
+GET /api/ai/test
+GET /api/samples
+GET /api/samples/{index}
+GET /api/samples/customers
+GET /api/samples/customers/{index}
+GET /api/samples/opportunities
+GET /api/samples/opportunities/{index}
+GET /api/samples/activities
+GET /api/samples/actions-context
+```
+
+### Service layer
+
+`IAiService` provides operations for:
+
+- business process analysis
+- customer risk assessment
+- activity summarization
+- opportunity analysis
+- recommended actions
+- AI connectivity testing
+
+The abstraction allows the business layer to remain independent of a specific AI provider.
+
+See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+- .NET 8 SDK
+- OpenAI API key
+- Docker (optional)
+
+## Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/ibrahimkilic/AiBusinessWorkflow.git
 cd AiBusinessWorkflow
-
-# Restore dependencies
 dotnet restore
 ```
 
-### Configuration
+## Configuration
 
-Create a local configuration file for your API key:
-
-```bash
-cp AiBusinessWorkflow.Api/appsettings.json AiBusinessWorkflow.Api/appsettings.Local.json
-```
-
-Edit `appsettings.Local.json` and add your OpenAI API key:
-
-```json
-{
-  "AI": {
-    "ApiKey": "sk-your-api-key-here"
-  }
-}
-```
-
-> `appsettings.Local.json` is loaded at runtime but excluded from version control via `.gitignore`. Don't commit API keys.
-
-You can also change the model and configure API key authentication:
+Create a local configuration file and provide the AI key.
 
 ```json
 {
@@ -197,95 +238,69 @@ You can also change the model and configure API key authentication:
     "ApiKey": "sk-your-api-key-here"
   },
   "Authentication": {
-    "ApiKeys": ["your-api-key-here"]
+    "ApiKeys": [
+      "your-api-key-here"
+    ]
   }
 }
 ```
 
-When `Authentication:ApiKeys` is empty or not configured, API key authentication is skipped in the Development environment. In non-Development environments, API keys must be configured or all authenticated requests will be rejected.
+Do not commit API keys.
 
-### Running the Application
+In Development, authentication can be skipped when API keys are not configured. In non-Development environments, API keys must be configured for authenticated requests.
+
+## Run
 
 ```bash
 cd AiBusinessWorkflow.Api
 dotnet run
 ```
 
-The API will be available at `http://localhost:5221`. In development mode, Swagger UI is at `http://localhost:5221/swagger`.
+Default development endpoints:
 
-### Running with Docker
-
-```bash
-# Build and run
-AI_API_KEY=sk-your-key docker compose up --build
-
-# The API will be available at http://localhost:8080
+```text
+http://localhost:5221
+http://localhost:5221/swagger
 ```
 
-### Running Tests
+## Docker
+
+```bash
+AI_API_KEY=sk-your-key docker compose up --build
+```
+
+## Tests
 
 ```bash
 dotnet test
 ```
 
-## API Reference
+---
 
-### Health Check
+# API Reference
 
-```
+## Health Check
+
+```text
 GET /api/health
 ```
 
-Returns detailed health status including AI connectivity and memory usage.
+Returns application health, AI connectivity and memory information.
 
-```json
-{
-  "status": "Healthy",
-  "totalDuration": 245.12,
-  "entries": [
-    {
-      "name": "ai",
-      "status": "Healthy",
-      "description": "AI service is reachable.",
-      "data": { "provider": "OpenAI", "model": "gpt-4o" }
-    },
-    {
-      "name": "memory",
-      "status": "Healthy",
-      "description": "Memory usage is normal: 42.5 MB",
-      "data": { "allocatedMB": 42.5 }
-    }
-  ]
-}
-```
+## AI Connection Test
 
-### AI Connection Test
-
-```
+```text
 GET /api/ai/test
 ```
 
-Tests the OpenAI connection with a simple prompt and returns the response.
+Tests the configured AI connection.
 
-```json
-{
-  "status": "success",
-  "response": "Hello! How can I assist you today?"
-}
-```
+## Sample Data
 
-### Sample Business Data
-
-```
+```text
 GET /api/samples
 GET /api/samples/{index}
-```
 
-Returns pre-built sample business processes for testing and demonstration. Includes 6 scenarios: customer onboarding, invoice processing, sales lead qualification, IT support, supply chain, and performance reviews.
-
-### Sample Business Intelligence Data
-
-```
 GET /api/samples/customers
 GET /api/samples/customers/{index}
 GET /api/samples/opportunities
@@ -294,376 +309,319 @@ GET /api/samples/activities
 GET /api/samples/actions-context
 ```
 
-Returns sample data for business intelligence endpoints. Includes 3 customer profiles (high-value loyal, medium engagement, at-risk churn), 2 sales opportunities (strong pipeline, at-risk deal), a department activity summary, and a recommended actions context.
+The sample data includes business-process scenarios and synthetic BI data.
 
-### Business Process Analysis
+## Business Process Analysis
 
-```
+```text
 POST /api/business-workflow/analyze
 ```
 
-Analyzes a business process using AI and returns structured optimization insights.
+Analyzes a business process and returns structured optimization insights.
 
-**Request body:**
+Typical output includes:
 
-```json
-{
-  "name": "Customer Onboarding",
-  "description": "New customer registration and activation process",
-  "inputData": "Customer form, ID document, email verification",
-  "goal": "Reduce registration time and increase customer satisfaction"
-}
-```
+- process efficiency
+- bottlenecks
+- recommendations
+- automation opportunities
+- overall risk
+- summary
 
-**Validation rules:**
-- `name`: Required, 3-200 characters
-- `description`: Required, 10-2000 characters
-- `inputData`: Required, 5-5000 characters
-- `goal`: Required, 5-1000 characters
+## Customer Risk Assessment
 
-**Response:**
-
-```json
-{
-  "processId": "aa333b9f-aad7-4e82-9ca4-0a41a7f018bc",
-  "processName": "Customer Onboarding",
-  "efficiency": {
-    "score": 72,
-    "rating": "Medium",
-    "explanation": "Process has moderate efficiency with room for improvement."
-  },
-  "bottlenecks": [
-    {
-      "area": "Manual Data Entry",
-      "severity": "High",
-      "description": "Data is entered manually causing delays.",
-      "suggestedFix": "Implement OCR-based data extraction."
-    }
-  ],
-  "recommendations": [...],
-  "automationOpportunities": [...],
-  "overallRiskLevel": "Medium",
-  "summary": "The process is functional but has significant optimization opportunities."
-}
-```
-
-### Customer Risk Assessment
-
-```
+```text
 POST /api/intelligence/customer-risk
 ```
 
-Assesses customer churn risk based on their profile, payment history, and activity patterns.
+Assesses customer churn risk from profile, payment history and activity patterns.
 
-**Request body:**
-
-```json
-{
-  "companyName": "TechFlow Solutions",
-  "industry": "Technology",
-  "employeeCount": 450,
-  "annualRevenue": 85000000,
-  "contactName": "Sarah Chen",
-  "contactEmail": "sarah.chen@techflow.com",
-  "accountAge": "4 years",
-  "paymentHistory": "Consistently on time, no missed payments",
-  "activities": [
-    { "type": "Meeting", "date": "2024-01-22", "description": "Quarterly business review", "outcome": "Discussed expansion" }
-  ]
-}
-```
-
-**Response:**
+Typical output:
 
 ```json
 {
-  "customerId": "...",
-  "companyName": "TechFlow Solutions",
   "riskScore": 25,
   "riskLevel": "Low",
   "churnProbability": "Low",
   "engagementTrend": "Increasing",
-  "riskFactors": [...],
-  "recommendedActions": ["Continue regular check-ins"],
-  "summary": "Low-risk customer with strong engagement."
+  "riskFactors": [],
+  "recommendedActions": [],
+  "summary": "..."
 }
 ```
 
-### Activity Summary
+## Activity Summary
 
-```
+```text
 POST /api/intelligence/activity-summary
 ```
 
-Summarizes department activities for a given period with trends and category breakdown.
+Summarizes activity volume, trends, categories and key findings for a department and period.
 
-**Request body:**
+## Opportunity Analysis
 
-```json
-{
-  "department": "Sales",
-  "period": "Q1 2024",
-  "activities": [
-    { "employeeName": "Alice Johnson", "activityType": "Cold Call", "date": "2024-01-08", "duration": "25 minutes", "description": "Outbound call to prospect", "result": "Meeting scheduled" }
-  ]
-}
-```
-
-**Response:**
-
-```json
-{
-  "department": "Sales",
-  "period": "Q1 2024",
-  "totalActivities": 10,
-  "uniqueEmployees": 4,
-  "keyFindings": ["High call volume", "Improved conversion"],
-  "categoryBreakdown": [{ "category": "Calls", "count": 6, "percentage": 60.0 }],
-  "trends": [{ "indicator": "Activity Volume", "direction": "Up", "description": "10% increase" }],
-  "summary": "Strong quarter for sales activities."
-}
-```
-
-### Opportunity Analysis
-
-```
+```text
 POST /api/intelligence/opportunity-analysis
 ```
 
-Analyzes a sales opportunity and predicts win probability with competitive positioning.
+Analyzes a sales opportunity and returns:
 
-**Request body:**
+- win probability
+- verdict
+- strengths
+- weaknesses
+- competitive position
+- recommended strategy
+- next steps
 
-```json
-{
-  "accountName": "Meridian Healthcare",
-  "dealValue": 250000,
-  "stage": "Proposal Sent",
-  "expectedCloseDate": "2024-04-30",
-  "competitorInfo": "Competing against HealthTech Pro (incumbent)",
-  "notes": "Champion is the CTO. CFO cautious about switching costs.",
-  "activities": [
-    { "type": "Demo", "date": "2024-01-24", "description": "Full platform demo", "contactPerson": "Dr. Patel, CTO" }
-  ]
-}
-```
+## Recommended Actions
 
-**Response:**
-
-```json
-{
-  "opportunityId": "...",
-  "accountName": "Meridian Healthcare",
-  "winProbability": 65,
-  "verdict": "Likely Win",
-  "strengths": ["Strong champion", "Good product fit"],
-  "weaknesses": ["Switching cost concerns"],
-  "competitivePosition": "Leading",
-  "recommendedStrategy": [{ "action": "Schedule exec meeting", "priority": "High", "rationale": "Build relationship" }],
-  "nextSteps": ["Send ROI analysis", "Schedule follow-up"],
-  "summary": "Deal is progressing well with strong champion support."
-}
-```
-
-### Recommended Actions
-
-```
+```text
 POST /api/intelligence/recommended-actions
 ```
 
-Generates prioritized action items based on business context, challenges, and goals.
+Generates prioritized actions from business context, challenges, resources and goals.
 
-**Request body:**
+## Management Dashboard
 
-```json
-{
-  "businessArea": "Sales Operations",
-  "currentChallenges": "Sales cycle lengthened from 45 to 68 days. Win rate dropped from 32% to 24%.",
-  "availableResources": "12 sales reps, CRM platform, $50K quarterly budget",
-  "goals": "Reduce sales cycle to under 50 days, improve win rate to 30%",
-  "recentMetrics": "Q4 2023: Revenue $2.1M (target $2.5M). Average deal size: $45K."
-}
-```
-
-**Response:**
-
-```json
-{
-  "businessArea": "Sales Operations",
-  "actions": [
-    { "title": "Automate reporting", "priority": "High", "impact": "High", "effort": "Medium", "description": "Implement automated sales reports", "expectedOutcome": "Save 10 hours per week" }
-  ],
-  "quickWins": ["Update CRM templates", "Automate email reminders"],
-  "longTermInitiatives": ["Implement AI-powered lead scoring"],
-  "summary": "Several actionable improvements identified."
-}
-```
-
-### Management Dashboard
-
-```
+```text
 POST /api/intelligence/dashboard
 ```
 
-Runs multiple analyses in parallel and returns a combined dashboard summary. At least one input must be provided.
+Runs independent intelligence analyses in parallel and returns a combined dashboard result.
 
-**Request body:**
+Inputs are optional; at least one analysis context must be supplied.
 
-```json
-{
-  "customer": { ... },
-  "opportunity": { ... },
-  "activities": { ... },
-  "actionsContext": { ... }
-}
+## Authentication
+
+Protected endpoints use:
+
+```http
+X-Api-Key: your-api-key
 ```
 
-Each field is optional (nullable). Provide only the analyses you need. The response includes only the analyses that were requested.
+Public endpoints include health, samples and Swagger according to the current configuration.
 
-**Response:**
+## Errors
 
-```json
-{
-  "generatedAt": "2024-03-15T10:30:00Z",
-  "customerRisk": { ... },
-  "activitySummary": { ... },
-  "opportunityAnalysis": { ... },
-  "recommendedActions": { ... }
-}
-```
+Errors follow RFC 7807 Problem Details and include a correlation ID where applicable.
 
-### Authentication
+---
 
-Protected endpoints require an `X-Api-Key` header when API keys are configured.
+# Technology Stack
 
-Public endpoints (no auth required): `/api/health`, `/api/samples`, `/swagger`
+| Technology | Version | Purpose |
+|---|---|---|
+| .NET | 8.0 LTS | Runtime and Web API |
+| C# | 12 | Primary language |
+| OpenAI SDK | 2.13.0 | AI integration |
+| ASP.NET Core | 8.0 | Web framework |
+| Swagger / Swashbuckle | 6.6.2 | API documentation |
+| xUnit | 2.5.3 | Testing |
+| FluentAssertions | 6.12.2 | Assertions |
+| Moq | 4.20.72 | Mocking |
+| Docker | Multi-stage | Containerization |
+| GitHub Actions | — | CI/CD |
 
-### Error Responses
+## Technology decisions
 
-All errors follow [RFC 7807 Problem Details](https://tools.ietf.org/html/rfc7807):
+### Responses API over Chat Completions
 
-```json
-{
-  "type": "https://tools.ietf.org/html/rfc7807",
-  "title": "An unexpected error occurred",
-  "status": 500,
-  "detail": "An internal error occurred. Please try again later.",
-  "instance": "/api/business-workflow/analyze",
-  "correlationId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-}
-```
+The Responses API provides a suitable interface for structured, machine-readable AI output.
 
-## Technology Stack
+### .NET 8 over .NET 9
 
-| Technology | Version | Purpose | Why |
-|---|---|---|---|
-| .NET | 8.0 (LTS) | Runtime and Web API framework | Long-term support, solid performance for API workloads |
-| C# | 12 | Primary language | Modern features (primary constructors, collection expressions), strong type safety |
-| OpenAI SDK | 2.13.0 | AI integration | Official SDK, supports the newer Responses API |
-| Swagger / Swashbuckle | 6.6.2 | API documentation | Industry standard for interactive API testing |
-| ASP.NET Core | 8.0 | Web framework | Built-in DI, middleware pipeline, minimal API support |
-| xUnit | 2.5.3 | Test framework | Clean syntax, good tooling integration |
-| FluentAssertions | 6.12.2 | Test assertions | Readable assertion syntax |
-| Moq | 4.20.72 | Mocking framework | Interface-based mocking for unit tests |
-| Docker | Multi-stage | Containerization | Consistent deployment environments |
-| GitHub Actions | - | CI/CD | Automated build, test, and artifact publishing |
+The project prioritizes the LTS release and stability.
 
-### Technology decisions
+### Provider abstraction
 
-- **Responses API over Chat Completions:** The newer `ResponsesClient` has a cleaner interface and better structured output support. Since this project needs machine-readable results (not freeform text), that matters.
-- **.NET 8 over .NET 9:** LTS release. For something heading toward production, stability wins over shiny new features.
-- **No ORM or database yet:** The current phase focuses on the AI analysis pipeline. Persistence will be added when historical data storage is actually needed.
+`IAiService` separates business logic from the AI provider.
 
-## Design Principles
+### No ORM/database in the current phase
 
-A few things I try to stick to in this project:
+The current phase focuses on the AI analysis pipeline. Persistence should be introduced when historical data, evaluation datasets or operational requirements justify it.
 
-- **AI should be useful, not impressive.** If the output doesn't help someone make a decision or take an action, it's not doing its job.
-- **Humans stay in the loop.** The system suggests, people decide.
-- **Structured over unstructured.** JSON with risk levels and action items beats a paragraph of generated text. It's also much easier to integrate with dashboards, alerts, or other systems downstream.
-- **Start small.** Get one workflow working properly before adding the next one.
-- **No real data.** Everything in this repo uses synthetic/demo data. No real customer or company information.
+---
 
-## Roadmap
+# Design Principles
 
-### Phase 1 — Foundation *(complete)*
+- **AI should be useful, not impressive.**
+- **Humans stay in the loop.**
+- **Structured output is preferred over unstructured prose.**
+- **Start small and measure before expanding.**
+- **Security is part of the AI architecture.**
+- **Synthetic data is used in the public repository.**
+- **Claims should be backed by reproducible evidence.**
+- **AI-generated work should remain reviewable and testable.**
 
-- [x] Create project repository and solution structure
-- [x] Define initial business workflow model
-- [x] Document architecture
-- [x] Create API with health check endpoint
-- [x] Add sample business data generator
-- [x] Add unit and integration tests
+---
 
-### Phase 2 — AI Integration *(complete)*
+# AI-Native Development
 
-- [x] Add AI analysis service with OpenAI Responses API
-- [x] Add prompt management and construction
-- [x] Handle AI failures and timeouts
-- [x] Define structured AI output schemas (JSON)
-- [x] Add input validation and sanitization
+This project was built through deliberate human-AI collaboration.
 
-### Phase 3 — Production Readiness *(complete)*
+The engineering workflow used Claude Code for:
 
-- [x] Authentication and API key management
-- [x] Structured logging with correlation IDs
-- [x] Health monitoring and metrics
-- [x] Docker support
-- [x] CI/CD pipeline (GitHub Actions)
-- [x] Error responses following RFC 7807 (Problem Details)
+- planning
+- architecture exploration
+- implementation
+- debugging
+- test generation
+- refactoring
+- security review
+- documentation
 
-### Phase 4 — Business Intelligence *(complete)*
+The human role remained:
+
+- defining goals
+- making architectural decisions
+- reviewing implementation
+- validating behaviour
+- approving changes
+
+The project should not be interpreted as a claim that AI independently produced a production system without engineering oversight.
+
+The purpose is to document and evaluate a practical **AI-native software engineering workflow**.
+
+See [AI_NATIVE.md](AI_NATIVE.md).
+
+---
+
+# Evaluation
+
+The next phase adds reproducible evaluation for:
+
+- output validity
+- business-intelligence quality
+- latency
+- cost
+- reliability
+- regression behaviour
+- AI-vs-baseline comparisons
+
+No benchmark number will be published until it is produced by a reproducible experiment.
+
+See [EVALUATION.md](EVALUATION.md).
+
+---
+
+# Security
+
+The current security hardening includes:
+
+- prompt injection protection
+- collection size limits
+- request body size limits
+- timing-safe API-key comparison
+- non-Development authentication enforcement
+- security response headers
+- dashboard timeout handling
+- correlation ID validation
+
+Future work focuses on making the threat model, evaluation and security verification externally auditable.
+
+See [SECURITY.md](SECURITY.md).
+
+---
+
+# Roadmap
+
+## Phase 1 — Foundation — Complete
+
+- [x] Repository and solution structure
+- [x] Initial business workflow model
+- [x] Architecture documentation
+- [x] Health check
+- [x] Sample business data
+- [x] Unit/integration tests
+
+## Phase 2 — AI Integration — Complete
+
+- [x] OpenAI Responses API
+- [x] Prompt construction
+- [x] AI failure/timeout handling
+- [x] Structured JSON output
+- [x] Input validation/sanitization
+
+## Phase 3 — Production Readiness — Complete
+
+- [x] API authentication
+- [x] Correlation IDs
+- [x] Health monitoring
+- [x] Docker
+- [x] GitHub Actions
+- [x] RFC 7807 errors
+
+## Phase 4 — Business Intelligence — Complete
 
 - [x] Customer risk scoring
 - [x] Activity summarization
-- [x] Opportunity win/loss analysis
-- [x] Recommended next actions engine
-- [x] Management dashboard endpoints
+- [x] Opportunity analysis
+- [x] Recommended actions
+- [x] Management dashboard
 
-### Security Hardening *(complete)*
+## Phase 5 — AI-Native Engineering — Planned
 
-- [x] Prompt injection protection with input sanitization
-- [x] Collection size limits (`[MaxLength]`) and request body size cap (5 MB)
-- [x] Timing-safe API key comparison (`CryptographicOperations.FixedTimeEquals`)
-- [x] Enforce API key configuration in non-Development environments
-- [x] Security response headers (X-Content-Type-Options, X-Frame-Options, CSP, Referrer-Policy)
-- [x] Dashboard timeout with 504 Gateway Timeout response
-- [x] Correlation ID format validation (GUID only)
-- [x] Minimal API endpoints organized into `IEndpointRouteBuilder` extension classes
+- [ ] AI-native methodology documentation
+- [ ] Architecture Decision Records
+- [ ] AI evaluation dataset
+- [ ] Reproducible benchmark harness
+- [ ] Prompt/version evaluation
+- [ ] AI regression tests
+- [ ] Cost/latency measurement
+- [ ] Human-vs-AI workflow analysis
 
-## AI Native Development
+## Phase 6 — Open Source & External Impact — Planned
 
-This project was built entirely with AI — not as an experiment, but as a deliberate way of working.
+- [ ] Public demo
+- [ ] Contribution guide
+- [ ] Issue templates
+- [ ] Pull-request template
+- [ ] Good-first-issue catalogue
+- [ ] Community examples
+- [ ] External contributors
+- [ ] Integration examples
+- [ ] Public release notes
+- [ ] Technical articles
+- [ ] Independent references and adoption evidence
 
-Every line of code, every test, every security fix, and this README were written through [Claude Code](https://claude.com/claude-code) (Anthropic's CLI for Claude). The human role was direction, review, and decisions. The AI handled implementation: architecture design, code generation, debugging, test coverage, and OWASP security hardening.
+---
 
-What that looks like in practice:
-- **Planning:** Each phase started with a natural language spec. Claude Code produced the implementation plan, identified the files to create or modify, and proposed the commit structure.
-- **Implementation:** Models, services, controllers, middleware, endpoints, and sample data were all generated in sequence, with builds and tests run after each step.
-- **Testing:** 186 unit and integration tests were written by AI, covering validation boundaries, parse methods, controller behavior, endpoint responses, and security headers.
-- **Security:** An OWASP Top 10 audit was performed by AI agents scanning the codebase in parallel, followed by a 5-step remediation plan that was implemented and verified.
-- **Refactoring:** Code organization improvements (like extracting minimal API endpoints into extension classes) were proposed and executed with full test verification.
+# Motivation
 
-The result is a production-grade .NET 8 API with clean architecture, comprehensive test coverage, and security hardening — built through human-AI collaboration where the human steers and the AI builds.
+This project is motivated by a long-standing problem in enterprise software: organizations collect large amounts of operational data but often struggle to convert it into timely decisions.
 
-## Motivation
+AI changes this in two ways.
 
-I've been building enterprise software for over 20 years. CRM systems, ERP platforms, SaaS products, mobile apps. One thing I've seen consistently is that companies are usually good at collecting data, but not nearly as good at doing something useful with it.
+First, AI can operate at runtime as an intelligence layer over business data.
 
-AI is changing that in two ways. First, as a runtime capability: process 500 customer records and tell me which 10 need attention this week. Flag the deals that are going cold before someone notices three months later. That's what this API does.
+Second, AI changes how software itself can be engineered.
 
-Second, as a development tool. This entire project was built with Claude Code. Not copy-pasting from a chatbot — actual AI-driven software engineering where the AI understands the codebase, maintains context across files, runs builds and tests, and iterates on failures. The human provides direction and makes decisions; the AI does the implementation work.
+This project deliberately explores both dimensions:
 
-I wanted to build something concrete that demonstrates both: AI as the product's core capability *and* AI as the tool that built the product. The longer-term goal is to show that AI in enterprise software can be a normal, well-architected service layer that teams can test, extend, and maintain — and that building it this way is practical today.
+> **AI as the product capability and AI as the engineering capability.**
 
-## Contributing
+The longer-term goal is to demonstrate that AI can be integrated into enterprise software as a well-architected, testable, secure and maintainable service — while also exploring how AI-native development changes the engineering workflow.
 
-Contributions are welcome. Please open an issue first to discuss what you'd like to change. It saves everyone time.
+---
 
-For bugs, include steps to reproduce. For features, describe the use case. PRs should be focused and follow the existing code style.
+# Open Source & Contribution
 
-## License
+Contributions are welcome.
 
-This project is licensed under the [MIT License](LICENSE).
+Before large changes, open an issue describing:
 
-Copyright (c) 2026 Ibrahim Kilic
+- the problem
+- proposed solution
+- expected impact
+- testing approach
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+# License
+
+MIT License.
+
+Copyright (c) 2026 Ibrahim Kilic.
