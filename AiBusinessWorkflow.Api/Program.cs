@@ -40,19 +40,34 @@ builder.Services.AddScoped<AiService>();
 builder.Services.AddScoped<IAiService>(sp =>
     new MeteredAiService(sp.GetRequiredService<AiService>(), sp.GetRequiredService<AiCallMetrics>()));
 
+var defaultPermitLimit = builder.Configuration.GetValue<int>("RateLimiting:Default:PermitLimit");
+var defaultWindowSeconds = builder.Configuration.GetValue<int>("RateLimiting:Default:WindowSeconds");
+var aiPermitLimit = builder.Configuration.GetValue<int>("RateLimiting:AI:PermitLimit");
+var aiWindowSeconds = builder.Configuration.GetValue<int>("RateLimiting:AI:WindowSeconds");
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/problem+json";
+        await Results.Problem(
+            statusCode: StatusCodes.Status429TooManyRequests,
+            title: "Too Many Requests",
+            detail: "Rate limit exceeded. Please try again later.")
+            .ExecuteAsync(context.HttpContext);
+    };
+
     options.AddFixedWindowLimiter("fixed", opt =>
     {
-        opt.PermitLimit = 100;
-        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = defaultPermitLimit;
+        opt.Window = TimeSpan.FromSeconds(defaultWindowSeconds);
         opt.QueueLimit = 0;
     });
     options.AddFixedWindowLimiter("ai", opt =>
     {
-        opt.PermitLimit = 20;
-        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = aiPermitLimit;
+        opt.Window = TimeSpan.FromSeconds(aiWindowSeconds);
         opt.QueueLimit = 0;
     });
 });
