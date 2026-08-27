@@ -14,7 +14,7 @@ public class RateLimitingEndpointTests : IClassFixture<CustomWebApplicationFacto
     }
 
     [Fact]
-    public async Task IntelligenceEndpoint_WhenLimitIsExceeded_Returns429ProblemDetails()
+    public async Task IntelligenceEndpoint_WhenLimitIsExceeded_Returns429ProblemDetailsAndRetryAfter()
     {
         var customer = new
         {
@@ -48,6 +48,9 @@ public class RateLimitingEndpointTests : IClassFixture<CustomWebApplicationFacto
 
         rejectedResponse.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
         rejectedResponse.Content.Headers.ContentType!.MediaType.Should().Be("application/problem+json");
+        rejectedResponse.Headers.RetryAfter.Should().NotBeNull();
+        rejectedResponse.Headers.RetryAfter!.Delta.Should().NotBeNull();
+        rejectedResponse.Headers.RetryAfter.Delta!.Value.TotalSeconds.Should().BePositive();
 
         var problem = await rejectedResponse.Content.ReadFromJsonAsync<RateLimitProblemDetails>();
         problem.Should().NotBeNull();
