@@ -40,10 +40,10 @@ builder.Services.AddScoped<AiService>();
 builder.Services.AddScoped<IAiService>(sp =>
     new MeteredAiService(sp.GetRequiredService<AiService>(), sp.GetRequiredService<AiCallMetrics>()));
 
-var defaultPermitLimit = builder.Configuration.GetValue<int>("RateLimiting:Default:PermitLimit");
-var defaultWindowSeconds = builder.Configuration.GetValue<int>("RateLimiting:Default:WindowSeconds");
-var aiPermitLimit = builder.Configuration.GetValue<int>("RateLimiting:AI:PermitLimit");
-var aiWindowSeconds = builder.Configuration.GetValue<int>("RateLimiting:AI:WindowSeconds");
+var defaultPermitLimit = builder.Configuration.GetValue("RateLimiting:Default:PermitLimit", 100);
+var defaultWindowSeconds = builder.Configuration.GetValue("RateLimiting:Default:WindowSeconds", 60);
+var aiPermitLimit = builder.Configuration.GetValue("RateLimiting:AI:PermitLimit", 20);
+var aiWindowSeconds = builder.Configuration.GetValue("RateLimiting:AI:WindowSeconds", 60);
 
 builder.Services.AddRateLimiter(options =>
 {
