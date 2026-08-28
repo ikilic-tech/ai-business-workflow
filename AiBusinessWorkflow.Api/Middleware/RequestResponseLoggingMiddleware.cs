@@ -13,7 +13,7 @@ public class RequestResponseLoggingMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context, RequestDelegate next, ILogger<RequestResponseLoggingMiddleware> logger)
+    public async Task InvokeAsync(HttpContext context)
     {
         var stopwatch = Stopwatch.StartNew();
 
